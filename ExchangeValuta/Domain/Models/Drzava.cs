@@ -12,7 +12,7 @@ namespace ExchangeValuta.Domain.Models
             Valute = new HashSet<Valuta>();
         }
 
-        public int Drzava_id { get; set; }
+        public int DrzavaId { get; set; }
         public string Naziv { get; set; }
         public string Sirina { get; set; }
         public string Duljina { get; set; }
