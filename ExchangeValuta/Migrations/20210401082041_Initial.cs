@@ -29,8 +29,12 @@ namespace ExchangeValuta.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Ime = table.Column<string>(nullable: true),
+                    Prezime = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
+                    Lozinka = table.Column<string>(nullable: true),
+                    Slika = table.Column<string>(nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
@@ -42,10 +46,7 @@ namespace ExchangeValuta.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    Ime = table.Column<string>(nullable: true),
-                    Prezime = table.Column<string>(nullable: true),
-                    Lozinka = table.Column<string>(nullable: true),
-                    Slika = table.Column<string>(nullable: true)
+                    
                 },
                 constraints: table =>
                 {

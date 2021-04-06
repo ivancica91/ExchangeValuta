@@ -42,6 +42,29 @@ namespace ExchangeValuta.Domain.Models
                 .IsRequired();
 
             });
+
+            builder.Entity<Role>()
+                .HasData(
+                new Role
+                {
+                    Id = 1,
+                    Name = "administrator",
+                    NormalizedName = "ADMINISTRATOR"
+                },
+                 new Role
+                 {
+                     Id = 2,
+                     Name = "moderator",
+                     NormalizedName = "MODERATOR"
+
+                 },
+                  new Role
+                  {
+                      Id = 3,
+                      Name = "korisnik",
+                      NormalizedName = "KORISNIK"
+                  }
+                );
         }
     }
 }
