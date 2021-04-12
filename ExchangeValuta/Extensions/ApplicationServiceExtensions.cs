@@ -16,6 +16,7 @@ namespace ExchangeValuta.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddScoped<ITokenService, TokenService>();
+            services.AddHttpClient<IConversionService, ConversionService>();
             services.AddDbContext<ExchangeDbContext>(x =>
             {
                 x.UseSqlite(config.GetConnectionString("DefaultConnection"));

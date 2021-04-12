@@ -39,6 +39,7 @@ namespace ExchangeValuta
             //services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMailService, MailService>();
 
+            services.AddHttpClient();
             services.AddCors();
             services.AddApplicationServices(_configuration);
             services.AddIdentityServices(_configuration);
