@@ -5,6 +5,7 @@ using ExchangeValuta.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -36,16 +37,24 @@ namespace ExchangeValuta
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IKorisnikService, KorisnikService>();
+            services.AddScoped<IValuteService, ValuteService>();
+            services.AddScoped<ISredstvaService, SredstvaService>();
+            services.AddScoped<IZahtjevService, ZahtjevService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
             //services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMailService, MailService>();
 
             services.AddHttpClient();
+            services.AddHttpContextAccessor();
             services.AddCors();
             services.AddApplicationServices(_configuration);
             services.AddIdentityServices(_configuration);
             services.AddSwaggerServices(_configuration);
 
             services.AddControllers();
+            services.AddAutoMapper(typeof(Startup));
             services.AddMvc(opt => opt.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
@@ -63,6 +72,7 @@ namespace ExchangeValuta
             app.UseRouting();
             // TODO
             // dodaj cors policy za front kasnije
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerServices();
 

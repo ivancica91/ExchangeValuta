@@ -24,9 +24,7 @@ namespace ExchangeValuta.Extensions
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
 
-                // TODO
-                // KASNIJE MAKNI COMMENT KAD OMOGUCIS KONFIRMACIJU
-                //opt.SignIn.RequireConfirmedEmail = true;
+                opt.SignIn.RequireConfirmedEmail = true;
                 opt.SignIn.RequireConfirmedAccount = true;
                 opt.User.RequireUniqueEmail = true;
                 opt.Lockout.AllowedForNewUsers = true;

@@ -1,11 +1,15 @@
-﻿using ExchangeValuta.Domain.Models;
+﻿using AutoMapper;
+using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -13,15 +17,22 @@ namespace ExchangeValuta.Services
 {
     public class KorisnikService : IKorisnikService
     {
+        private readonly ExchangeDbContext _context;
         private readonly UserManager<Korisnik> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IMailService _mailService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public KorisnikService(UserManager<Korisnik> userManager, IConfiguration configuration, IMailService mailService)
+        public KorisnikService(ExchangeDbContext context,UserManager<Korisnik> userManager, IConfiguration configuration,
+            IMailService mailService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
+            _context = context;
             _userManager = userManager;
             _configuration = configuration;
             _mailService = mailService;
+            _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
         public async Task<ResponseDto> RegisterUserAsync(UserRegisterDto registerDto)
@@ -109,6 +120,23 @@ namespace ExchangeValuta.Services
                 IsSuccess = false,
                 Errors = result.Errors.Select(e => e.Description)
             };
+        }
+
+        public async Task UpdateUser(UpdateUserDto updateUser)
+        {
+            var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userManager.Users
+                .Where(k => k.UserName == userName)
+                .FirstOrDefaultAsync();
+
+            _mapper.Map(updateUser, user);
+            Update(user);
+           await _context.SaveChangesAsync();
+        }
+
+        public void Update(Korisnik korisnik)
+        {
+            var entry = _context.Entry(korisnik).State = EntityState.Modified;
         }
     }
 }
