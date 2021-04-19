@@ -11,7 +11,11 @@ namespace ExchangeValuta.Domain.Services
     {
         Task<ResponseDto> RegisterUserAsync(UserRegisterDto registerDto);
         Task<ResponseDto> ConfirmEmailAsync(ConfirmEmailDto confirmEmail);
+        Task<IEnumerable<GetUsersDto>> GetAllUsers();
+        Task<KorisnikDto> PostUser(PostUserDto postUser);
+        Task UpdateLoggedUser(UpdateLoggedUserDto updateUser);
         Task UpdateUser(UpdateUserDto updateUser);
+
         void Update(Korisnik korisnik);
     }
 }

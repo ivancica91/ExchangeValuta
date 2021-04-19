@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace ExchangeValuta.Resources
 {
-    public class UpdateUserDto
+    public class UpdateLoggedUserDto
     {
-        public int Id { get; set; }
         public string Ime { get; set; }
         public string Prezime { get; set; }
         public string Slika { get; set; }
+
     }
 }

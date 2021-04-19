@@ -8,7 +8,7 @@ namespace ExchangeValuta.Domain.Services
 {
     public interface IConversionService
     {
-        Task<Tecaj> GetAllAsync();
+        //Task<Tecaj> GetAllAsync();
         //Task<Tecaj> GetTecajAsync(int id);
         //Task<Tecaj> CreateTecajAsync(Tecaj task);
         //Task<Tecaj> UpdateTecajAsync(Tecaj task);

@@ -1,5 +1,6 @@
 ﻿using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -20,16 +21,26 @@ namespace ExchangeValuta.Controllers
             _service = service;
         }
 
+        [Authorize(Policy ="RequireModeratorRole")]
+        [HttpGet("AllZahtjeve")]
+        public async Task<IEnumerable<ZahtjevDto>> GetAllZahtjeve()
+        {
+            return await _service.GetAllZahtjeve();
+        }
+
+
+        [Authorize(Policy = "RequireSignedUpUser")]
         [HttpPost("Zahtjev")]
         public async Task<ZahtjevDto> PostZahtjev(PostZahtjevDto postZahtjev)
         {
             return await _service.PostZahtjev(postZahtjev);
         }
 
+        [Authorize(Policy = "RequireSignedUpUser")]
         [HttpGet("ZahtjeveByLoggedUser")]
         public async Task<IEnumerable<ZahtjevDto>> GetZahtjeve()
         {
-            return await _service.GetZahtjeve();
+            return await _service.GetAllZahtjeve();
         }
     }
 }

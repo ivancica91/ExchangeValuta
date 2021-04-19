@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
@@ -122,7 +123,52 @@ namespace ExchangeValuta.Services
             };
         }
 
+
+        public async Task<IEnumerable<GetUsersDto>> GetAllUsers()
+        {
+            return await _context.Korisnici
+            .ProjectTo<GetUsersDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+        }
+
+        public async Task<KorisnikDto> PostUser(PostUserDto postUser)
+        {
+            var user = new Korisnik()
+            {
+                UserName = postUser.UserName,
+                Ime = postUser.Ime,
+                Prezime = postUser.Prezime,
+                Email = postUser.Email,
+                Slika = postUser.Slika,
+                EmailConfirmed = true,
+                LockoutEnabled = true,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Lozinka = postUser.Lozinka
+            };
+
+            await _userManager.CreateAsync(user, user.Lozinka);
+            await _userManager.AddToRoleAsync(user, "korisnik");
+
+            await _context.SaveChangesAsync();
+
+            var korisnik = _mapper.Map<KorisnikDto>(user);
+            return korisnik;
+        }
+
+
         public async Task UpdateUser(UpdateUserDto updateUser)
+        {
+            var user = await _userManager.Users
+                .Where(k => k.Id == updateUser.Id)
+                .FirstOrDefaultAsync();
+
+            _mapper.Map(updateUser, user);
+            Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task UpdateLoggedUser(UpdateLoggedUserDto updateUser)
         {
             var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var user = await _userManager.Users

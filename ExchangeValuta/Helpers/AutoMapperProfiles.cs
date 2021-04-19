@@ -13,7 +13,11 @@ namespace ExchangeValuta.Helpers
         public AutoMapperProfiles()
         {
             CreateMap<Korisnik, KorisnikDto>().ReverseMap();
+            CreateMap<Korisnik, GetUsersDto>().ReverseMap();
+
+            CreateMap<Korisnik, UpdateLoggedUserDto>().ReverseMap();
             CreateMap<Korisnik, UpdateUserDto>().ReverseMap();
+
 
             CreateMap<Valuta, ValutaDto>();
 

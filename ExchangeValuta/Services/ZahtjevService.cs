@@ -76,7 +76,14 @@ namespace ExchangeValuta.Services
             return _mapper.Map<ZahtjevDto>(zahtjev);
         }
 
-        public async Task<IEnumerable<ZahtjevDto>> GetZahtjeve()
+        public async Task<IEnumerable<ZahtjevDto>> GetAllZahtjeve()
+        {
+            return await _context.Zahtjevi
+                .ProjectTo<ZahtjevDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ZahtjevDto>> GetZahtjeveByLoggedUser()
         {
             var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var id = _context.Korisnici.Where(k => k.UserName == userName)
@@ -91,6 +98,65 @@ namespace ExchangeValuta.Services
                 .ToListAsync();
 
         }
+
+        public async Task<ZahtjevDto> OdobriZahtjev(OdobravanjeZahtjevaDto odobravanjeZahtjeva)
+        {
+            // trazimo zahtjev po id-u
+            var zahtjev = await _context.Zahtjevi
+                .Where(z => z.ZahtjevId == odobravanjeZahtjeva.ZahtjevId)
+                .FirstOrDefaultAsync();
+
+            //trazimo valutu koja se prodaje, tj. dobijemo njen id
+            var valuta = zahtjev.ProdajemValutaId;
+
+            // dobijemo period u kojem se ta valuta moze prodati po idu
+            var vrijemeProdaje = await _context.Valute
+                .Where(v => v.ValutaId == valuta)
+                .Select(v => new VrijemeValuteDto()
+                {
+                    AktivnoOd = v.AktivnoOd,
+                    AktivnoDo = v.AktivnoDo
+                }
+                ).FirstOrDefaultAsync();
+
+            //trazimo sva vremena i gledamo da li je moguca prodaja
+            TimeSpan start = vrijemeProdaje.AktivnoOd; //10 o'clock
+            TimeSpan end = vrijemeProdaje.AktivnoDo; //12 o'clock
+            TimeSpan now = DateTime.Now.TimeOfDay;
+
+            if ((now < start) && (now > end))
+            {
+                throw new Exception("Zahtjev se ne može odobriti jer se navedena valuta ne može prodati u ovo doba dana.");
+            }
+
+            var odobravanje = new OdobravanjeZahtjevaDto()
+            {
+                ZahtjevId = odobravanjeZahtjeva.ZahtjevId,
+                Prihvacen = odobravanjeZahtjeva.Prihvacen
+            };
+
+
+            // ove dvije linije ispod samo da vidim radi li ovo do sad, maknuti onda i nastaviti od onog ispod
+            var odobreno =_mapper.Map<ZahtjevDto>(odobravanje);
+
+            return odobreno;
+
+            // NASTAVI TU DALJE
+            // TREBA AZURIRATI IZNOSE, ZNACI PROCI KROZ SVA SREDSTVA, VJEROJATNO JAVNI API I NEKKAO PRETVORITI
+            //if(odobravanjeZahtjeva.Prihvacen == 1)
+            //{
+            //    var sredstvo1 = new Sredstva()
+            //    {
+            //        S
+            //    }
+            //}
+
+
+
+
+
+        }
+
 
 
     }

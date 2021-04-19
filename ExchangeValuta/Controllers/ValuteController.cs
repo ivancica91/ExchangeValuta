@@ -1,6 +1,7 @@
 ﻿using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,11 +26,12 @@ namespace ExchangeValuta.Controllers
         }
 
         // S ovime dobijemo sve tečajeve u odnosu na kunu
-        [HttpGet("konverziju")]
-        public async Task<Tecaj> GetProtuvrijednostOdHRK()
-        {
-            return await _conversionService.GetAllAsync();
-        }
+        // bzvz, treba vidjeti u funkc. sto je ostalo
+        //[HttpGet("konverziju")]
+        //public async Task<Tecaj> GetProtuvrijednostOdHRK()
+        //{
+        //    return await _conversionService.GetAllAsync();
+        //}
 
         [HttpGet("PopisValuta")]
         public async Task<IEnumerable<ValutaDto>> GetValute()
@@ -43,6 +45,14 @@ namespace ExchangeValuta.Controllers
         {
             return await _service.GetValuta(id);
         }
+
+        [Authorize(Policy = "RequireModeratorRole")]
+        [HttpPut("AzurirajTecaj")]
+        public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
+        {
+            return await _service.PutTecajValute(putValuta);
+        }
+
 
 
 

@@ -1,6 +1,7 @@
 ﻿using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +58,7 @@ namespace ExchangeValuta.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<KorisnikDto>> Login(UserLoginDto loginDto)
         {
-            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.UserName == loginDto.UserName.ToLower());
+            var user = await _userManager.FindByNameAsync(loginDto.UserName);
 
             if (user == null)
             {
@@ -89,10 +90,11 @@ namespace ExchangeValuta.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireSignedUpUser")]
         [HttpPut("AzurirajProfil")]
-        public async Task PutUser(UpdateUserDto updateUser)
+        public async Task PutUser(UpdateLoggedUserDto updateUser)
         {
-            await _korisnikService.UpdateUser(updateUser);
+            await _korisnikService.UpdateLoggedUser(updateUser);
         }
 
         // TODO

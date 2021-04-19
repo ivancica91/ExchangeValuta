@@ -10,5 +10,6 @@ namespace ExchangeValuta.Domain.Services
     {
         Task<IEnumerable<ValutaDto>> GetValute();
         Task<ValutaDto> GetValuta(int id);
+        Task<ValutaDto> PutTecajValute(PutValutaDto putValuta);
     }
 }
