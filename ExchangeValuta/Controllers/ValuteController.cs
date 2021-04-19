@@ -46,12 +46,12 @@ namespace ExchangeValuta.Controllers
             return await _service.GetValuta(id);
         }
 
-        [Authorize(Policy = "RequireModeratorRole")]
-        [HttpPut("AzurirajTecaj")]
-        public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
-        {
-            return await _service.PutTecajValute(putValuta);
-        }
+        //[Authorize(Policy = "RequireModeratorRole")]
+        //[HttpPut("AzurirajTecaj")]
+        //public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
+        //{
+        //    return await _service.PutTecajValute(putValuta);
+        //}
 
 
 
