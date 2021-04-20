@@ -229,6 +229,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 1,
                     UserName = "admin",
+                    NormalizedUserName = "ADMIN",
                     Lozinka = "admin",
                     PasswordHash = hasher.HashPassword(korisnik, "admin"),
                     Ime = "Administrator",
@@ -242,6 +243,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 2,
                     UserName = "voditelj",
+                    NormalizedUserName = "VODITELJ",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Voditelj",
@@ -255,6 +257,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 18,
                     UserName = "kdunst",
+                    NormalizedUserName = "KDUNST",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Kirsten",
@@ -269,6 +272,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 30,
                     UserName = "thanks",
+                    NormalizedUserName = "THANKS",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Tom",
@@ -283,6 +287,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 31,
                     UserName = "jalba",
+                    NormalizedUserName = "JALBA",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Jessica",
@@ -297,6 +302,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 3,
                     UserName = "pkos",
+                    NormalizedUserName = "PKOS",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Pero",
@@ -311,6 +317,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 4,
                     UserName = "vzec",
+                    NormalizedUserName = "VZEC",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Vladimir",
@@ -325,6 +332,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 5,
                     UserName = "qtarantino",
+                    NormalizedUserName = "QTARANTINO",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Quentin",
@@ -339,6 +347,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 6,
                     UserName = "mbellucci",
+                    NormalizedUserName = "MBELLUCCI",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Monica",
@@ -353,6 +362,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 7,
                     UserName = "vmortensen",
+                    NormalizedUserName = "VMORTENSEN",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Viggo",
@@ -367,6 +377,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 8,
                     UserName = "jgarner",
+                    NormalizedUserName = "JGARNER",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Jennifer",
@@ -381,6 +392,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 9,
                     UserName = "nportman",
+                    NormalizedUserName = "NPORTMAN",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Natalie",
@@ -395,6 +407,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 10,
                     UserName = "dradcliffe",
+                    NormalizedUserName = "DRADCLIFFE",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Daniel",
@@ -409,6 +422,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 11,
                     UserName = "hberry",
+                    NormalizedUserName = "HBERRY",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Halle",
@@ -423,6 +437,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 12, 
                     UserName = "vdiesel",
+                    NormalizedUserName = "VDIESEL",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Vin",
@@ -437,6 +452,7 @@ namespace ExchangeValuta.Domain.Models
                 { 
                     Id = 13, 
                     UserName = "ecuthbert",
+                    NormalizedUserName = "ECUTHBERT",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Elisha",
@@ -450,6 +466,7 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik
                 { Id = 14,
                     UserName = "janiston",
+                    NormalizedUserName = "JANISTON",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Jennifer", 
@@ -462,7 +479,8 @@ namespace ExchangeValuta.Domain.Models
                 },
                 new Korisnik 
                 { Id = 15,
-                    UserName = "ctheron", 
+                    UserName = "ctheron",
+                    NormalizedUserName = "CTHERON",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Charlize",
@@ -477,6 +495,7 @@ namespace ExchangeValuta.Domain.Models
                 { 
                     Id = 16,
                     UserName = "nkidman",
+                    NormalizedUserName = "NKIDMAN",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Nicole", 
@@ -491,6 +510,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 17, 
                     UserName = "ewatson",
+                    NormalizedUserName = "EWATSON",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Emma",
@@ -504,7 +524,8 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik
                 { 
                     Id = 19,
-                    UserName = "sjohansson", 
+                    UserName = "sjohansson",
+                    NormalizedUserName = "SJOHANSSON",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Scarlett",
@@ -519,6 +540,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 20,
                     UserName = "philton",
+                    NormalizedUserName = "PHILTON",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Paris", 
@@ -532,6 +554,7 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik 
                 { Id = 21,
                     UserName = "kbeckinsale",
+                    NormalizedUserName = "KBECKINSALE",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Kate",
@@ -546,6 +569,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 22, 
                     UserName = "tcruise",
+                    NormalizedUserName = "TCRUISE",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Tom",
@@ -559,7 +583,8 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik
                 {
                     Id = 23, 
-                    UserName = "hduff", 
+                    UserName = "hduff",
+                    NormalizedUserName = "HDUFF",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Hilary", 
@@ -574,6 +599,7 @@ namespace ExchangeValuta.Domain.Models
                 { 
                     Id = 24, 
                     UserName = "ajolie",
+                    NormalizedUserName = "AJOLIE",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Angelina", 
@@ -587,7 +613,8 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik
                 {
                     Id = 25, 
-                    UserName = "kknightley", 
+                    UserName = "kknightley",
+                    NormalizedUserName = "KKNIGHTLEY",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Keira",
@@ -602,6 +629,7 @@ namespace ExchangeValuta.Domain.Models
                 {
                     Id = 26, 
                     UserName = "obloom",
+                    NormalizedUserName = "OBLOOM",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Orlando", 
@@ -615,7 +643,8 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik
                 { 
                     Id = 27, 
-                    UserName = "llohan", 
+                    UserName = "llohan",
+                    NormalizedUserName = "LLOHAN",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Lindsay", 
@@ -629,7 +658,8 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik
                 {
                     Id = 28,
-                    UserName = "jdepp", 
+                    UserName = "jdepp",
+                    NormalizedUserName = "JDEPP",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Johnny", 
@@ -643,7 +673,8 @@ namespace ExchangeValuta.Domain.Models
                 new Korisnik 
                 {
                     Id = 29,
-                    UserName = "kreeves", 
+                    UserName = "kreeves",
+                    NormalizedUserName = "KREVEES",
                     Lozinka = "123456",
                     PasswordHash = hasher.HashPassword(korisnik, "123456"),
                     Ime = "Keanu", 

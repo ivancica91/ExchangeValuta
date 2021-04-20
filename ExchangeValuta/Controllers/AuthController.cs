@@ -58,7 +58,7 @@ namespace ExchangeValuta.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<KorisnikDto>> Login(UserLoginDto loginDto)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.UserName);
+            Korisnik user = await _userManager.FindByNameAsync(loginDto.UserName);
 
             if (user == null)
             {

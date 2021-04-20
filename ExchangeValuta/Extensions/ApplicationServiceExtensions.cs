@@ -16,7 +16,10 @@ namespace ExchangeValuta.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddScoped<ITokenService, TokenService>();
-            services.AddHttpClient<IConversionService, ConversionService>();
+            //services.AddHttpClient<IConversionService, ConversionService>();
+            services.AddHttpClient<IValuteService, ValuteService>();
+            //services.AddTransient<IValuteService, ValuteService>(); // JEL TREBA OVO?
+
             services.AddDbContext<ExchangeDbContext>(x =>
             {
                 x.UseSqlite(config.GetConnectionString("DefaultConnection"));

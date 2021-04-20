@@ -21,14 +21,14 @@ namespace ExchangeValuta.Services
         private readonly ExchangeDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly HttpClient _client;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ValuteService(ExchangeDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor/*, HttpClient client*/)
+        public ValuteService(ExchangeDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            //_client = client;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<IEnumerable<ValutaDto>> GetValute()
@@ -46,63 +46,60 @@ namespace ExchangeValuta.Services
                 .FirstOrDefaultAsync();
         }
 
-        //public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
-        //{
-        //    var url = $"https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/pair/HRK/{putValuta.Naziv}";
-        //    var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //    var id = _context.Korisnici.Where(k => k.UserName == userName)
-        //        .FirstOrDefault().Id;
+        public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
+        {
+            var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var id = _context.Korisnici.Where(k => k.UserName == userName)
+                .FirstOrDefault().Id;
 
-        //    var valuta = _context.Valute
-        //        .Where(v => v.ValutaId == putValuta.ValutaId && v.KorisnikId == id)
-        //        .FirstOrDefaultAsync();
+            var valuta = _context.Valute
+                .Where(v => v.ValutaId == putValuta.ValutaId && v.KorisnikId == id)
+                .FirstAsync();
 
-        //    if(valuta == null)
-        //    {
-        //        throw new Exception("Tražena valuta ne postoji ili nemate pristup traženoj valuti.");
-        //    }
-
-        //    var zadnjeAzuriranje = putValuta.DatumAzuriranja.Date;
-
-        //    if(zadnjeAzuriranje == DateTime.Now.Date)
-        //    {
-        //        throw new Exception("Tečaj valute je već ažuriran na današnji dan, molimo pokušajte sutra.");
-        //    }
-
-        //    var tecaj = await _client.GetAsync(url);
-
-        //    var content = await tecaj.Content.ReadAsStringAsync();
-        //    double tec;
-
-        //    var result = double.TryParse(content, out tec); ;
+            if (valuta == null)
+            {
+                throw new Exception("Tražena valuta ne postoji ili nemate pristup traženoj valuti.");
+            }
 
 
-        //    //    var httpResponse = await _client.GetAsync(_baseUrl);
+            //var zadnjeAzuriranje = valuta.DatumAzuriranja.Date;
 
-        //    //if (!httpResponse.IsSuccessStatusCode)
-        //    //{
-        //    //    throw new Exception("Nije moguće dohvatiti valute");
-        //    //}
+            //if (zadnjeAzuriranje == DateTime.Now.Date)
+            //{
+            //    throw new Exception("Tečaj valute je već ažuriran na današnji dan, molimo pokušajte sutra.");
+            //}
 
-        //    //var content = await httpResponse.Content.ReadAsStringAsync();
-        //    //var tasks = JsonConvert.DeserializeObject<Tecaj>(content);
+            var httpClient = _httpClientFactory.CreateClient("valute");
+            var url = $"/pair/HRK/{putValuta.Naziv}";
+            var response = await httpClient.GetStringAsync(url);
+            var catalog = JsonConvert.DeserializeObject<ValutaDto>(response);
 
-        //    //return tasks;
+
+            //var responseString = await _client.GetStringAsync(url);
+            //var catalog = JsonConvert.DeserializeObject<ValutaDto>(responseString);
+            //return catalog;
+
+            //var /*responseString*/ = await tecaj.Content.ReadAsStringAsync();
+            //double tec;
+
+            //var result = double.TryParse(catalog, out tec); ;
 
 
-        //    var mod = new Valuta()
-        //    {
-        //        ValutaId = putValuta.ValutaId,
-        //        Naziv = putValuta.Naziv,
-        //        DatumAzuriranja = DateTime.Now,
-        //        Tecaj = tec
-        //    };
 
-        //    await _context.SaveChangesAsync();
 
-        //    return _mapper.Map<ValutaDto>(mod);
+            var mod = new Valuta()
+            {
+                ValutaId = putValuta.ValutaId,
+                Naziv = putValuta.Naziv,
+                //DatumAzuriranja = DateTime.Now,
+                Tecaj =catalog.Tecaj
+            };
 
-        //}
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<ValutaDto>(mod);
+
+        }
 
 
     }

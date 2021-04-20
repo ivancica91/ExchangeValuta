@@ -16,13 +16,17 @@ namespace ExchangeValuta.Controllers
     [ApiController]
     public class ValuteController : ControllerBase
     {
-        private readonly IConversionService _conversionService;
+        //private readonly IConversionService _conversionService;
         private readonly IValuteService _service;
+        private  HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ValuteController(IConversionService conversionService, IValuteService service)
+        public ValuteController(/*IConversionService conversionService,*/ IValuteService service, HttpClient httpClient, IHttpClientFactory httpClientFactory)
         {
-            _conversionService = conversionService;
+            //_conversionService = conversionService;
             _service = service;
+            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
         }
 
         // S ovime dobijemo sve tečajeve u odnosu na kunu
@@ -46,11 +50,20 @@ namespace ExchangeValuta.Controllers
             return await _service.GetValuta(id);
         }
 
-        //[Authorize(Policy = "RequireModeratorRole")]
-        //[HttpPut("AzurirajTecaj")]
-        //public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
+        [Authorize(Policy = "RequireModeratorRole")]
+        [HttpPut("AzurirajTecaj")]
+        public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
+        {
+            return await _service.PutTecajValute(putValuta);
+        }
+
+        //[HttpGet]
+        //public async Task<string> Get(string naziv)
         //{
-        //    return await _service.PutTecajValute(putValuta);
+        //    var url = $"https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/pair/HRK/{naziv}";
+        //    var httpClient = new HttpClient();
+        //    var response = await httpClient.GetAsync(url);
+        //    return await response.Content.ReadAsStringAsync();
         //}
 
 

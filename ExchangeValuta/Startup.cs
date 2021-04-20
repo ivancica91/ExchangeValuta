@@ -46,7 +46,10 @@ namespace ExchangeValuta
             //services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMailService, MailService>();
 
-            services.AddHttpClient();
+            services.AddHttpClient("valute", c => 
+            {
+                c.BaseAddress = new Uri("https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083");
+            });
 
 
             services.AddHttpContextAccessor();

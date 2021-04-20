@@ -13,9 +13,9 @@ namespace ExchangeValuta.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<Korisnik> _userManager;
-        private readonly IConfiguration _configuration;
-        private readonly IMailService _mailService;
+        //private readonly UserManager<Korisnik> _userManager;
+        //private readonly IConfiguration _configuration;
+        //private readonly IMailService _mailService;
 
         public AuthService()
         {

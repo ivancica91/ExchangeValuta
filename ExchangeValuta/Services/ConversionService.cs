@@ -14,15 +14,15 @@ namespace ExchangeValuta.Services
     public class ConversionService : IConversionService
     {
 
-        private const string _baseUrl = "https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/latest/HRK";
-        private readonly HttpClient _client;
+        //private const string _baseUrl = "https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/latest/HRK";
+        //private readonly HttpClient _client;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly ExchangeDbContext _context;
 
-        public ConversionService(HttpClient client,IHttpContextAccessor httpContextAccessor, IMapper mapper, ExchangeDbContext context)
+        public ConversionService(/*HttpClient client,*/IHttpContextAccessor httpContextAccessor, IMapper mapper, ExchangeDbContext context)
         {
-            _client = client;
+            //_client = client;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _context = context;
