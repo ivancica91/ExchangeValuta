@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace ExchangeValuta.Domain.Models
 {
+    [Serializable]
+
     public class Valuta
     {
         public Valuta()
@@ -20,9 +23,16 @@ namespace ExchangeValuta.Domain.Models
         public TimeSpan AktivnoOd { get; set; } 
         public TimeSpan AktivnoDo { get; set; }
         public DateTime DatumAzuriranja { get; set; }
+        [XmlIgnore]
         public Korisnik Korisnik { get; set; }
+        [XmlIgnore]
+
         public ICollection<Drzava> Drzave { get; set; }
+        [XmlIgnore]
+
         public ICollection<Zahtjev> Zahtjevi { get; set; } // dodao
+        [XmlIgnore]
+
         public ICollection<Sredstva> Sredstva { get; set; } // dodao
 
 

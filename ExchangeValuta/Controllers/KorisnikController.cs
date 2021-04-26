@@ -44,6 +44,13 @@ namespace ExchangeValuta.Controllers
             return user;
         }
 
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPost("editRoles")]
+        public async Task EditRoles([FromQuery] string userName, [FromQuery] string role)
+        {
+            await _service.EditRoles(userName, role);
+        }
+
 
 
     }

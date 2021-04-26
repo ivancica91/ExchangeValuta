@@ -28,6 +28,14 @@ namespace ExchangeValuta.Controllers
             return await _service.GetAllZahtjeve();
         }
 
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpGet("AllOdobreneZahtjeve")]
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime from, DateTime to)
+        {
+            return await _service.GetAllOdobreneZahtjeve(from, to);
+        }
+
+
 
         [Authorize(Policy = "RequireSignedUpUser")]
         [HttpPost("Zahtjev")]
@@ -42,5 +50,12 @@ namespace ExchangeValuta.Controllers
         {
             return await _service.GetAllZahtjeve();
         }
+
+        [HttpPut("OdobravanjeZahtjeva")]
+        public async Task<ZahtjevDto> OdobriZahtjev(OdobravanjeZahtjevaDto odobravanjeZahtjeva)
+        {
+            return await _service.OdobriZahtjev(odobravanjeZahtjeva);
+        }
+
     }
 }

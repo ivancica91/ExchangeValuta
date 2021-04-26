@@ -40,16 +40,24 @@ namespace ExchangeValuta
             services.AddScoped<IValuteService, ValuteService>();
             services.AddScoped<ISredstvaService, SredstvaService>();
             services.AddScoped<IZahtjevService, ZahtjevService>();
+            services.AddScoped<IDrzaveService, DrzaveService>();
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
             //services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMailService, MailService>();
 
-            services.AddHttpClient("valute", c => 
+            services.AddHttpClient("valute", c =>
             {
-                c.BaseAddress = new Uri("https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083");
+                c.BaseAddress = new Uri("https://v6.exchangerate-api.com/v6/");
             });
+
+            services.AddHttpClient("mape", c =>
+            {
+                c.BaseAddress = new Uri("https://nominatim.openstreetmap.org/reverse");
+            }
+            );
 
 
             services.AddHttpContextAccessor();

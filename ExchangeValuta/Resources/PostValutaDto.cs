@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ExchangeValuta.Resources
 {
-    public class PutValutaDto
+    public class PostValutaDto
     {
         public int KorisnikId { get; set; }
         public string Naziv { get; set; }

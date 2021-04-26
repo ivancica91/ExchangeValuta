@@ -36,6 +36,14 @@ namespace ExchangeValuta.Controllers
         }
 
         [Authorize(Policy = "RequireSignedUpUser")]
+        [HttpGet("ProtuvrijednostHRK")]
+        public async Task<IEnumerable<ProtuvrijednostDto>> GetProtuvrijednost()
+        {
+            return await _service.GetProtuvrijednost();
+        }
+
+
+        [Authorize(Policy = "RequireSignedUpUser")]
         [HttpPost("PostSredstvaByLoggedUser")]
         public async Task<ActionResult<SredstvaDto>> PostSredstva([FromBody] PostSredstvaDto postSredstva)
         {

@@ -17,7 +17,7 @@ namespace ExchangeValuta.Extensions
         {
             services.AddScoped<ITokenService, TokenService>();
             //services.AddHttpClient<IConversionService, ConversionService>();
-            services.AddHttpClient<IValuteService, ValuteService>();
+            //services.AddHttpClient<IValuteService, ValuteService>();
             //services.AddTransient<IValuteService, ValuteService>(); // JEL TREBA OVO?
 
             services.AddDbContext<ExchangeDbContext>(x =>

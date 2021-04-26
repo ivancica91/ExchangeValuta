@@ -180,6 +180,32 @@ namespace ExchangeValuta.Services
            await _context.SaveChangesAsync();
         }
 
+        public async Task EditRoles(string userName, string role)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new Exception("Korisnik nije pronađen");
+            }
+
+            var selectedRoles = role.Split(",").ToArray();
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("Pogreška pri dodavanju uloge.");
+            }
+
+            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+
+             await _userManager.GetRolesAsync(user);
+
+        }
+
+
         public void Update(Korisnik korisnik)
         {
             var entry = _context.Entry(korisnik).State = EntityState.Modified;

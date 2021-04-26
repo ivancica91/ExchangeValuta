@@ -7,6 +7,7 @@ namespace ExchangeValuta.Resources
 {
     public class ZahtjevDto
     {
+        public int ZahtjevId { get; set; }
         public int KorisnikId { get; set; }
         public double Iznos { get; set; } 
         public int ProdajemValutaId { get; set; }

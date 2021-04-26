@@ -1,4 +1,5 @@
-﻿using ExchangeValuta.Domain.Models;
+﻿using AutoMapper;
+using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ExchangeValuta.Controllers
@@ -16,16 +18,12 @@ namespace ExchangeValuta.Controllers
     [ApiController]
     public class ValuteController : ControllerBase
     {
-        //private readonly IConversionService _conversionService;
         private readonly IValuteService _service;
-        private  HttpClient _httpClient;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ValuteController(/*IConversionService conversionService,*/ IValuteService service, HttpClient httpClient, IHttpClientFactory httpClientFactory)
+        public ValuteController(IValuteService service, IHttpClientFactory httpClientFactory)
         {
-            //_conversionService = conversionService;
             _service = service;
-            _httpClient = httpClient;
             _httpClientFactory = httpClientFactory;
         }
 
@@ -37,8 +35,8 @@ namespace ExchangeValuta.Controllers
         //    return await _conversionService.GetAllAsync();
         //}
 
-        [HttpGet("PopisValuta")]
-        public async Task<IEnumerable<ValutaDto>> GetValute()
+        [HttpGet("PopisValuta")]  // to namne treba, samo za test bilo
+        public async Task<List<ValutaDto>> GetValute()
         {
             var valute = await _service.GetValute();
             return valute;
@@ -50,21 +48,44 @@ namespace ExchangeValuta.Controllers
             return await _service.GetValuta(id);
         }
 
+        [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
+        [HttpPost("DodajValutu")]
+        public async Task<ValutaDto> AddValuta(PostValutaDto postValutaDto)
+        {
+            return await _service.AddValuta(postValutaDto);
+        }
+
         [Authorize(Policy = "RequireModeratorRole")]
         [HttpPut("AzurirajTecaj")]
-        public async Task<ValutaDto> PutTecajValute(PutValutaDto putValuta)
+        public async Task<ValutaDto> PutTecajValute(PutTecajValuteDto putValuta)
         {
             return await _service.PutTecajValute(putValuta);
         }
 
-        //[HttpGet]
-        //public async Task<string> Get(string naziv)
-        //{
-        //    var url = $"https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/pair/HRK/{naziv}";
-        //    var httpClient = new HttpClient();
-        //    var response = await httpClient.GetAsync(url);
-        //    return await response.Content.ReadAsStringAsync();
-        //}
+        [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
+        [HttpPut("AzurirajValutu")]
+        public async Task<ValutaDto> PutValutaByName(PutValutaDto putValuta)
+        {
+            return await _service.PutValutaByName(putValuta);
+        }
+
+        [HttpGet("ValuteToXml")]
+        public void GetValuteToXml()
+        {
+             _service.GetValuteToXml();
+        }
+
+        [HttpPut("ValuteFromxml")]
+        public void PutValuteFromXml()
+        {
+            _service.GetValuteFromXml();
+        }
+
+
+        // TODO
+        // VALUTEFROMXML
+
+
 
 
 

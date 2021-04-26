@@ -4,11 +4,14 @@ using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ExchangeValuta.Services
@@ -18,12 +21,14 @@ namespace ExchangeValuta.Services
         private readonly ExchangeDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ZahtjevService(ExchangeDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ZahtjevService(ExchangeDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<ZahtjevDto> PostZahtjev(PostZahtjevDto postZahtjev)
@@ -78,7 +83,7 @@ namespace ExchangeValuta.Services
 
         public async Task<IEnumerable<ZahtjevDto>> GetAllZahtjeve()
         {
-            return await _context.Zahtjevi
+            return await _context.Zahtjevi                
                 .ProjectTo<ZahtjevDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
@@ -99,34 +104,127 @@ namespace ExchangeValuta.Services
 
         }
 
+
+        // NE IZBACUJE MI DOBRE REZULTATE, POGLEDATI JOS MALO TO FILTRIRANJE
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime from, DateTime to)
+        {
+           return await _context.Zahtjevi
+                .Where(s => s.Prihvacen == 2 && s.DatumVrijemeKreiranja >= from && s.DatumVrijemeKreiranja <= to)
+                .GroupBy(s => s.ProdajemValutaId)
+                .Select(s => new UkupnoProdaneValuteDto()
+                {
+                    ValutaId = s.Key,
+                    Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo super ili cu srusit internet?
+                    Iznos = s.Sum(v => v.Iznos),
+                }).ToListAsync();
+        }
+
+        //public async Task<IEnumerable<ZahtjevDto>> GetProdanoKupljenoOdbijeno(int korisnikId)
+        //{
+        //    var odobrenizahtjevi = await _context.Zahtjevi
+        //        .Where(z => z.KorisnikId == korisnikId && z.Prihvacen == 2)
+        //        .GroupBy(v => v.ProdajemValutaId)
+        //        .Select(s => new )
+        //        .ToListAsync();
+        //}
+
+
         public async Task<ZahtjevDto> OdobriZahtjev(OdobravanjeZahtjevaDto odobravanjeZahtjeva)
         {
+
             // trazimo zahtjev po id-u
             var zahtjev = await _context.Zahtjevi
+                .Include(v => v.Valuta)
                 .Where(z => z.ZahtjevId == odobravanjeZahtjeva.ZahtjevId)
+                .ProjectTo<ZahtjevDto>(_mapper.ConfigurationProvider)
+                .Select(z => new ZahtjevDto()
+                {
+                    ZahtjevId = z.ZahtjevId,
+                    KorisnikId = z.KorisnikId,
+                    ProdajemValutaId = z.ProdajemValutaId,
+                    ProdajemValuta = _context.Valute.Where(v => v.ValutaId == z.ProdajemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    KupujemValutaId = z.KupujemValutaId,
+                    KupujemValuta = _context.Valute.Where(v => v.ValutaId == z.KupujemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    Iznos = z.Iznos,
+                    Prihvacen = z.Prihvacen
+                })
                 .FirstOrDefaultAsync();
 
-            //trazimo valutu koja se prodaje, tj. dobijemo njen id
-            var valuta = zahtjev.ProdajemValutaId;
+            var httpClient = _httpClientFactory.CreateClient();
+            //var url = $"/09a14a921f6de3a3c311a083/pair/{zahtjev.KupujemValuta}/{zahtjev.ProdajemValuta}/{zahtjev.Iznos}";
+            var url = $"https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/pair/{zahtjev.KupujemValuta}/{zahtjev.ProdajemValuta}/{zahtjev.Iznos}";
+            var response = await httpClient.GetAsync(url);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var responseObject = await JsonSerializer.DeserializeAsync<KonverzijaValute>(responseStream);
+
 
             // dobijemo period u kojem se ta valuta moze prodati po idu
             var vrijemeProdaje = await _context.Valute
-                .Where(v => v.ValutaId == valuta)
+                .Where(v => v.ValutaId == zahtjev.ProdajemValutaId)
                 .Select(v => new VrijemeValuteDto()
                 {
                     AktivnoOd = v.AktivnoOd,
                     AktivnoDo = v.AktivnoDo
-                }
-                ).FirstOrDefaultAsync();
+                })
+                .FirstOrDefaultAsync();
 
             //trazimo sva vremena i gledamo da li je moguca prodaja
-            TimeSpan start = vrijemeProdaje.AktivnoOd; //10 o'clock
-            TimeSpan end = vrijemeProdaje.AktivnoDo; //12 o'clock
+            TimeSpan start = vrijemeProdaje.AktivnoOd; //10 
+            TimeSpan end = vrijemeProdaje.AktivnoDo; //12 
             TimeSpan now = DateTime.Now.TimeOfDay;
 
             if ((now < start) && (now > end))
             {
                 throw new Exception("Zahtjev se ne može odobriti jer se navedena valuta ne može prodati u ovo doba dana.");
+            }
+
+            //// TESTIRAJ
+            if (odobravanjeZahtjeva.Prihvacen == 2)
+            {
+                var prodajnoSredstvo = await _context.Sredstva
+                    .Where(u => u.KorisnikId == zahtjev.KorisnikId && u.ValutaId == zahtjev.ProdajemValutaId)
+                    .FirstOrDefaultAsync();
+
+                prodajnoSredstvo.Iznos -= zahtjev.Iznos;
+
+                _context.Sredstva.Update(prodajnoSredstvo);
+                await _context.SaveChangesAsync();
+
+                var kupovnoSredstvo = await _context.Sredstva
+                    .Where(u => u.KorisnikId == zahtjev.KorisnikId && u.ValutaId == zahtjev.KupujemValutaId)
+                    .FirstOrDefaultAsync();
+                if (kupovnoSredstvo == null)
+                {
+                    var kupovno = new Sredstva()
+                    {
+                        ValutaId = zahtjev.KupujemValutaId,
+                        KorisnikId = zahtjev.KorisnikId,
+                        Iznos = responseObject.conversion_rate
+                    };
+                    _context.Sredstva.Add(kupovno);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    kupovnoSredstvo.Iznos += responseObject.conversion_rate;
+                    _context.Sredstva.Update(kupovnoSredstvo);
+                    await _context.SaveChangesAsync();
+
+
+                }
+
+
+                zahtjev.Prihvacen = 2;
+                var zah = _mapper.Map<Zahtjev>(zahtjev);
+
+                // TODO
+                // NAPRAVITI OVO, sada sve odradi osim promjene statusa zahtjeva iz 1 u 2
+                // kad pokušam updateati status zahtjeva s 1 na 2 i dolje spremiti promjene, pukne
+                //_context.Zahtjevi.Update(zah);
+
+
+                // pukne ovdje kod spremanja, zasto?
+                await _context.SaveChangesAsync();
             }
 
             var odobravanje = new OdobravanjeZahtjevaDto()
@@ -135,29 +233,9 @@ namespace ExchangeValuta.Services
                 Prihvacen = odobravanjeZahtjeva.Prihvacen
             };
 
-
-            // ove dvije linije ispod samo da vidim radi li ovo do sad, maknuti onda i nastaviti od onog ispod
-            var odobreno =_mapper.Map<ZahtjevDto>(odobravanje);
+            var odobreno = _mapper.Map<ZahtjevDto>(odobravanje);
 
             return odobreno;
-
-            // NASTAVI TU DALJE
-            // TREBA AZURIRATI IZNOSE, ZNACI PROCI KROZ SVA SREDSTVA, VJEROJATNO JAVNI API I NEKKAO PRETVORITI
-            //if(odobravanjeZahtjeva.Prihvacen == 1)
-            //{
-            //    var sredstvo1 = new Sredstva()
-            //    {
-            //        S
-            //    }
-            //}
-
-
-
-
-
         }
-
-
-
     }
 }

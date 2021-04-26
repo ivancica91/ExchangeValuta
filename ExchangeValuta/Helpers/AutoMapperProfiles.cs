@@ -24,6 +24,9 @@ namespace ExchangeValuta.Helpers
             CreateMap<Sredstva, SredstvaDto>().ForMember(dest => dest.Valuta,
                 opt => opt.MapFrom(src => src.Valuta.Naziv)).ReverseMap();
             CreateMap<Sredstva, PostSredstvaDto>().ReverseMap();
+            CreateMap<Sredstva, ProtuvrijednostDto>().ForMember(dest => dest.ProtuvrijednostHRK,
+                opt => opt.MapFrom(src => src.Iznos)).ReverseMap();
+
             CreateMap<PostSredstvaDto, SredstvaDto>().ReverseMap();
 
 
@@ -33,6 +36,15 @@ namespace ExchangeValuta.Helpers
                 .ForMember(dest => dest.ProdajemValuta,
                 opt => opt.MapFrom(src => src.Valuta.Naziv))
                .ReverseMap();
+            CreateMap<OdobravanjeZahtjevaDto, ZahtjevDto>().ReverseMap();
+
+
+            CreateMap<KonverzijaValute, TecajDto>().ReverseMap();
+            CreateMap<OpenStreetMap, MapDrzavaDto>().ReverseMap();
+
+            CreateMap<Drzava, HimnaDto>().ReverseMap();
+
+
 
 
         }

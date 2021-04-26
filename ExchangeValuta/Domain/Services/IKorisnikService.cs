@@ -15,6 +15,7 @@ namespace ExchangeValuta.Domain.Services
         Task<KorisnikDto> PostUser(PostUserDto postUser);
         Task UpdateLoggedUser(UpdateLoggedUserDto updateUser);
         Task UpdateUser(UpdateUserDto updateUser);
+        Task EditRoles(string userName, string role);
 
         void Update(Korisnik korisnik);
     }

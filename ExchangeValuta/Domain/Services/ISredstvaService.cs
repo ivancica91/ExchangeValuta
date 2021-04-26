@@ -11,6 +11,7 @@ namespace ExchangeValuta.Domain.Services
         Task<IEnumerable<SredstvaDto>> GetSredstvaForLoggedUser();
         Task<SredstvaDto> PostSredstva(PostSredstvaDto postSredstva);
         Task<SredstvaDto> PutSredstva(PostSredstvaDto postSredstva);
+        Task<IEnumerable<ProtuvrijednostDto>> GetProtuvrijednost();
 
     }
 }
