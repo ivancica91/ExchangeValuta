@@ -43,6 +43,7 @@ namespace ExchangeValuta.Helpers
             CreateMap<OpenStreetMap, MapDrzavaDto>().ReverseMap();
 
             CreateMap<Drzava, HimnaDto>().ReverseMap();
+            CreateMap<Drzava, DrzavaDetaljiDto>().ReverseMap();
 
 
 

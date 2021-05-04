@@ -29,6 +29,12 @@ namespace ExchangeValuta.Controllers
             _service = service;
         }
 
+        [HttpGet("PopisDrzava")]
+        public async Task<IEnumerable<DrzavaDetaljiDto>> GetAllDrzave()
+        {
+            return await _service.GetAllDrzave();
+        }
+
         [HttpGet("HimnaByDrzavaId")]
         public async Task<HimnaDto> GetHimnaByDrzavaId(int drzavaId)
         {

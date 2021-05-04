@@ -9,6 +9,7 @@ namespace ExchangeValuta.Domain.Services
 {
     public interface IDrzaveService 
     {
+        Task<IEnumerable<DrzavaDetaljiDto>> GetAllDrzave();
         Task<HimnaDto> GetHimnaDrzave(int drzavaId);
     }
 }

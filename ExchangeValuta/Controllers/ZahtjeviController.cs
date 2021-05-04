@@ -48,7 +48,7 @@ namespace ExchangeValuta.Controllers
         [HttpGet("ZahtjeveByLoggedUser")]
         public async Task<IEnumerable<ZahtjevDto>> GetZahtjeve()
         {
-            return await _service.GetAllZahtjeve();
+            return await _service.GetZahtjeveByLoggedUser();
         }
 
         [HttpPut("OdobravanjeZahtjeva")]

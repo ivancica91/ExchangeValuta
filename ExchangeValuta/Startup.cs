@@ -83,8 +83,7 @@ namespace ExchangeValuta
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            // TODO
-            // dodaj cors policy za front kasnije
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSwaggerServices();

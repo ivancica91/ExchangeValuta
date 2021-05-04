@@ -22,13 +22,19 @@ namespace ExchangeValuta.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<DrzavaDetaljiDto>> GetAllDrzave()
+        {
+            return await _context.Drzave
+                .ProjectTo<DrzavaDetaljiDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
         public async Task<HimnaDto> GetHimnaDrzave(int drzavaId)
         {
             return await _context.Drzave
                 .Where(d => d.DrzavaId == drzavaId)
                 .ProjectTo<HimnaDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
-
         }
 
     }
