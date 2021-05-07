@@ -8,7 +8,7 @@ namespace ExchangeValuta.Resources
     public class PutTecajValuteDto
     {
         public int ValutaId { get; set; }
-        public string Naziv { get; set; }
+        //public string Naziv { get; set; }
 
 
     }

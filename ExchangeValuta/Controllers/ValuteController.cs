@@ -43,7 +43,7 @@ namespace ExchangeValuta.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ValutaDto> GetValutaById(int id)
+        public async Task<ValutaDetailsDto> GetValutaById(int id)
         {
             return await _service.GetValuta(id);
         }
@@ -56,17 +56,17 @@ namespace ExchangeValuta.Controllers
         }
 
         [Authorize(Policy = "RequireModeratorRole")]
-        [HttpPut("AzurirajTecaj")]
-        public async Task<ValutaDto> PutTecajValute(PutTecajValuteDto putValuta)
+        [HttpPut("AzurirajTecaj/{id}")]
+        public async Task<ValutaDto> PutTecajValute([FromRoute] int id/*PutTecajValuteDto putValuta*/)
         {
-            return await _service.PutTecajValute(putValuta);
+            return await _service.PutTecajValute(id);
         }
 
         [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
-        [HttpPut("AzurirajValutu")]
-        public async Task<ValutaDto> PutValutaByName(PutValutaDto putValuta)
+        [HttpPut("AzurirajValutu/{id}")]
+        public async Task<ValutaDto> PutValutaById(int id,PutValutaDto putValuta)
         {
-            return await _service.PutValutaByName(putValuta);
+            return await _service.PutValutaById(id,putValuta);
         }
 
         [HttpGet("ValuteToXml")]

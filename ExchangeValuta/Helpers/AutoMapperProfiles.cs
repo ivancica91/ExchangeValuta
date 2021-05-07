@@ -20,6 +20,8 @@ namespace ExchangeValuta.Helpers
 
 
             CreateMap<Valuta, ValutaDto>();
+            CreateMap<Valuta, ValutaDetailsDto>();
+
 
             CreateMap<Sredstva, SredstvaDto>().ForMember(dest => dest.Valuta,
                 opt => opt.MapFrom(src => src.Valuta.Naziv)).ReverseMap();

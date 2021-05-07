@@ -69,7 +69,7 @@ namespace ExchangeValuta.Services
                 {
                     Iznos = sredstvo.Iznos,
                     Valuta = sredstvo.Valuta.Naziv,
-                    ProtuvrijednostHRK = responseObject.conversion_rate
+                    ProtuvrijednostHRK = responseObject.conversion_result
                 });
             }
 
@@ -83,11 +83,26 @@ namespace ExchangeValuta.Services
             var id = _context.Korisnici.Where(k => k.UserName == userName)
                 .FirstOrDefault().Id;
 
+            // dodao da vidim jel radi s nazivom
+            var valuta = await _context.Valute
+                .Where(v => v.Naziv == postSredstva.Valuta)
+                .FirstOrDefaultAsync();
+
+            // dodao da vidim jel radi s nazivom
+            if (valuta == null)
+            {
+                throw new Exception("Ne postoji tražena valuta, pokušajte ponovno. ");
+            }
+
+            var valutaId = valuta.ValutaId;
+
             var sredstvaaa = await _context.Sredstva
+                .Include(v => v.Valuta)
                 .Where(s => s.KorisnikId == id)
                 .ToListAsync();
 
-            var duplaSredstva = sredstvaaa.Where(v => v.ValutaId == postSredstva.ValutaId).FirstOrDefault();
+            // promijenio s id na ime da vidim jel radi, inace v => v.ValutaId == postSredstva.ValutaId
+            var duplaSredstva = sredstvaaa.Where(v => v.Valuta.Naziv == postSredstva.Valuta).FirstOrDefault();
             if (duplaSredstva != null)
             {
                 throw new Exception("Već posjedujete sredstva u traženoj valuti. Molimo Vas ažurirajte iznos tražene valute.");
@@ -101,7 +116,8 @@ namespace ExchangeValuta.Services
             var sredstva = new Sredstva
             {
                 KorisnikId = id,
-                ValutaId = postSredstva.ValutaId,
+                //ValutaId = postSredstva.ValutaId,
+                ValutaId = valutaId,
                 Iznos = postSredstva.Iznos
             };
 
@@ -124,12 +140,17 @@ namespace ExchangeValuta.Services
                 .FirstOrDefault().Id;
 
             var sredstvaKorisnika = await _context.Sredstva
+                .Include(v => v.Valuta)
                 .Where(k => k.KorisnikId == id)
                 .ToListAsync();
 
+
+            // promijenio iz .Where(v => v.ValutaId == postSredstva.ValutaId) u naziv da vidim jel radi
             var sredstvoToPut = sredstvaKorisnika
-                .Where(v => v.ValutaId == postSredstva.ValutaId)
+                .Where(v => v.Valuta.Naziv == postSredstva.Valuta)
                 .FirstOrDefault();
+
+            var valutaId = sredstvoToPut.ValutaId;
 
             if (sredstvoToPut == null)
             {
@@ -146,7 +167,8 @@ namespace ExchangeValuta.Services
             // nije bas najelegantnije rješenje, ali radi. nisam uspio grupno nego ovako pojedinacno, mozda vidi kasnije jos
             sredstvoToPut.SredstvaId = sredstvoToPut.SredstvaId;
             sredstvoToPut.KorisnikId = id;
-            sredstvoToPut.ValutaId = postSredstva.ValutaId;
+            //sredstvoToPut.ValutaId = postSredstva.ValutaId;
+            sredstvoToPut.ValutaId = valutaId;
             sredstvoToPut.Iznos = postSredstva.Iznos;
 
             _context.Update(sredstvoToPut);

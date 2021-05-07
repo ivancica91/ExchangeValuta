@@ -9,6 +9,8 @@ namespace ExchangeValuta.Domain.Models
     public class KonverzijaValute
     {
         public float conversion_rate { get; set; }
+        public float conversion_result { get; set; }
+
     }
 
 }

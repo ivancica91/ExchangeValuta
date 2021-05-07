@@ -22,6 +22,17 @@ namespace ExchangeValuta.Services
             _mapper = mapper;
         }
 
+        public async Task<DrzavaDetaljiDto> GetDrzavaByValutaId(int valutaId)
+        {
+            return await _context.Drzave
+               .Include(v => v.Valuta)
+               .Where(x => x.ValutaId == valutaId)
+               .ProjectTo<DrzavaDetaljiDto>(_mapper.ConfigurationProvider)
+               .FirstOrDefaultAsync();
+
+        }
+
+
         public async Task<IEnumerable<DrzavaDetaljiDto>> GetAllDrzave()
         {
             return await _context.Drzave
@@ -29,10 +40,11 @@ namespace ExchangeValuta.Services
                 .ToListAsync();
         }
 
-        public async Task<HimnaDto> GetHimnaDrzave(int drzavaId)
+        public async Task<HimnaDto> GetHimnaDrzave(int valutaId)
         {
             return await _context.Drzave
-                .Where(d => d.DrzavaId == drzavaId)
+                .Include(v => v.Valuta)
+                .Where(d => d.ValutaId == valutaId)
                 .ProjectTo<HimnaDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }

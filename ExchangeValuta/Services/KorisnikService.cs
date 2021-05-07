@@ -48,6 +48,15 @@ namespace ExchangeValuta.Services
                     IsSuccess = false
                 };
 
+            var postojeciKorisnik = await _context.Korisnici
+                .Where(u => u.Email == registerDto.Email)
+                .FirstOrDefaultAsync();
+
+            if(postojeciKorisnik != null)
+            {
+                throw new Exception("Korisnik s navedenim emailom već postoji.");
+            }
+
 
             var user = new Korisnik
             {

@@ -1,8 +1,11 @@
-﻿using ExchangeValuta.Domain.Models;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using ExchangeValuta.Domain.Models;
 using ExchangeValuta.Domain.Services;
 using ExchangeValuta.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +24,7 @@ namespace ExchangeValuta.Controllers
         private readonly ExchangeDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IDrzaveService _service;
+        private readonly IMapper _mapper;
 
         public DrzaveController(ExchangeDbContext context, IHttpClientFactory httpClientFactory, IDrzaveService service)
         {
@@ -29,24 +33,35 @@ namespace ExchangeValuta.Controllers
             _service = service;
         }
 
+        [HttpGet("DrzavaByValutaId")]
+        public async Task<DrzavaDetaljiDto> GetDrzavaByValutaId(int valutaId)
+        {
+            return await _service.GetDrzavaByValutaId(valutaId);
+        }
+
         [HttpGet("PopisDrzava")]
         public async Task<IEnumerable<DrzavaDetaljiDto>> GetAllDrzave()
         {
             return await _service.GetAllDrzave();
         }
 
-        [HttpGet("HimnaByDrzavaId")]
-        public async Task<HimnaDto> GetHimnaByDrzavaId(int drzavaId)
+        [HttpGet("HimnaByDrzavaId/{id}")]
+        public async Task<HimnaDto> GetHimnaByDrzavaId(int id)
         {
-            return await _service.GetHimnaDrzave(drzavaId);
+            return await _service.GetHimnaDrzave(id);
         }
 
 
         [HttpGet("DrzavaByValuta")]
-        public async Task<MapDrzavaDto> GetDrzavaByLongAndLat(int drzavaId)
+        public async Task<MapDrzavaDto> GetMapDrzavaByValutaId(int valutaId)
         {
             // kul, radi, samo prebaci u servis sve!
-            var drzava = await _context.Drzave.FindAsync(drzavaId);
+            //var drzava = await _context.Drzave.FindAsync(drzavaId);
+            var drzava = await _context.Drzave
+                .Include(v => v.Valuta)
+                .Where(x => x.ValutaId == valutaId)
+                .FirstOrDefaultAsync();
+                
 
 
             var httpClient = _httpClientFactory.CreateClient();

@@ -12,8 +12,11 @@ namespace ExchangeValuta.Resources
         public double Iznos { get; set; } 
         public int ProdajemValutaId { get; set; }
         public string ProdajemValuta { get; set; }
+        //public string ValutaP { get; set; }
         public int KupujemValutaId { get; set; }
         public string KupujemValuta { get; set; }
+        //public string ValutaK { get; set; }
+
         public DateTime DatumVrijemeKreiranja { get; set; }
         public int Prihvacen { get; set; }
 

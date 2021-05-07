@@ -37,16 +37,29 @@ namespace ExchangeValuta.Services
             var id = _context.Korisnici.Where(k => k.UserName == userName)
                 .FirstOrDefault().Id;
 
+            // pokušavam umjesto id-a raditi s nazivima
             var prodajemValutu = await _context.Sredstva
-                .Where(k => k.KorisnikId == id && k.ValutaId == postZahtjev.ProdajemValutaId)
+                .Include(v => v.Valuta)
+                //.Where(k => k.KorisnikId == id && k.ValutaId == postZahtjev.ProdajemValutaId)
+                .Where(k => k.KorisnikId == id && k.Valuta.Naziv == postZahtjev.ProdajemValuta)
                 .FirstOrDefaultAsync();
             if(prodajemValutu == null)
             {
                 throw new Exception("Ne posjedujete valutu koju želite prodati.");
             }
 
+            var kupujemValutu = await _context.Valute
+                .Where(v => v.Naziv == postZahtjev.KupujemValuta)
+                .FirstOrDefaultAsync();
+
+            var kupujemId = kupujemValutu.ValutaId;
+
+
             var raspoloziviIznos = _context.Sredstva
-                .Where(k => k.KorisnikId == id && k.ValutaId == postZahtjev.ProdajemValutaId)
+                .Include(v => v.Valuta)
+                //.Where(k => k.KorisnikId == id && k.ValutaId == postZahtjev.ProdajemValutaId)
+                  .Where(k => k.KorisnikId == id && k.Valuta.Naziv == postZahtjev.ProdajemValuta)
+
                 .Select(k => new ZahtjevDto()
                 {
                     Iznos = k.Iznos
@@ -68,8 +81,10 @@ namespace ExchangeValuta.Services
             {
                 KorisnikId = id,
                 Iznos = postZahtjev.Iznos,
-                ProdajemValutaId = postZahtjev.ProdajemValutaId,
-                KupujemValutaId = postZahtjev.KupujemValutaId,
+                //ProdajemValutaId = postZahtjev.ProdajemValutaId,
+                //KupujemValutaId = postZahtjev.KupujemValutaId,
+                ProdajemValutaId = prodajemValutu.ValutaId,
+                KupujemValutaId = kupujemId,
                 DatumVrijemeKreiranja = DateTime.Now,
                 Prihvacen = 1
             };
@@ -83,8 +98,21 @@ namespace ExchangeValuta.Services
 
         public async Task<IEnumerable<ZahtjevDto>> GetAllZahtjeve()
         {
-            return await _context.Zahtjevi                
+            return await _context.Zahtjevi     
+                .Include(v => v.Valuta)
                 .ProjectTo<ZahtjevDto>(_mapper.ConfigurationProvider)
+                .Select(z => new ZahtjevDto()
+                {
+                    ZahtjevId = z.ZahtjevId,
+                    KorisnikId = z.KorisnikId,
+                    ProdajemValutaId = z.ProdajemValutaId,
+                    ProdajemValuta = _context.Valute.Where(v => v.ValutaId == z.ProdajemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    KupujemValutaId = z.KupujemValutaId,
+                    KupujemValuta = _context.Valute.Where(v => v.ValutaId == z.KupujemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    Iznos = z.Iznos,
+                    Prihvacen = z.Prihvacen,
+                    DatumVrijemeKreiranja = DateTime.Now
+                })
                 .ToListAsync();
         }
 
@@ -94,12 +122,22 @@ namespace ExchangeValuta.Services
             var id = _context.Korisnici.Where(k => k.UserName == userName)
                 .FirstOrDefault().Id;
 
-            // TODO
-            // ne znam zasto mi nece mapirati imena valuta koje se prodaju/kupuju
-            // isto tako u sredstvaService i radi, sve odradio u mapperProfileu
             return await _context.Zahtjevi
+                .Include(v => v.Valuta)
                 .Where(k => k.KorisnikId == id)
                 .ProjectTo<ZahtjevDto>(_mapper.ConfigurationProvider)
+                .Select(z => new ZahtjevDto()
+                {
+                    ZahtjevId = z.ZahtjevId,
+                    KorisnikId = z.KorisnikId,
+                    ProdajemValutaId = z.ProdajemValutaId,
+                    ProdajemValuta = _context.Valute.Where(v => v.ValutaId == z.ProdajemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    KupujemValutaId = z.KupujemValutaId,
+                    KupujemValuta = _context.Valute.Where(v => v.ValutaId == z.KupujemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    Iznos = z.Iznos,
+                    Prihvacen = z.Prihvacen,
+                    DatumVrijemeKreiranja = DateTime.Now
+                })
                 .ToListAsync();
 
         }
@@ -146,13 +184,13 @@ namespace ExchangeValuta.Services
                     KupujemValutaId = z.KupujemValutaId,
                     KupujemValuta = _context.Valute.Where(v => v.ValutaId == z.KupujemValutaId).Select(s => s.Naziv).FirstOrDefault(),
                     Iznos = z.Iznos,
-                    Prihvacen = z.Prihvacen
+                    Prihvacen = z.Prihvacen,
+                    DatumVrijemeKreiranja = DateTime.Now
                 })
                 .FirstOrDefaultAsync();
 
             var httpClient = _httpClientFactory.CreateClient();
-            //var url = $"/09a14a921f6de3a3c311a083/pair/{zahtjev.KupujemValuta}/{zahtjev.ProdajemValuta}/{zahtjev.Iznos}";
-            var url = $"https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/pair/{zahtjev.KupujemValuta}/{zahtjev.ProdajemValuta}/{zahtjev.Iznos}";
+            var url = $"https://v6.exchangerate-api.com/v6/09a14a921f6de3a3c311a083/pair/{zahtjev.ProdajemValuta}/{zahtjev.KupujemValuta}/{zahtjev.Iznos}";
             var response = await httpClient.GetAsync(url);
             var responseStream = await response.Content.ReadAsStreamAsync();
             var responseObject = await JsonSerializer.DeserializeAsync<KonverzijaValute>(responseStream);
@@ -199,14 +237,14 @@ namespace ExchangeValuta.Services
                     {
                         ValutaId = zahtjev.KupujemValutaId,
                         KorisnikId = zahtjev.KorisnikId,
-                        Iznos = responseObject.conversion_rate
+                        Iznos = responseObject.conversion_result
                     };
                     _context.Sredstva.Add(kupovno);
                     await _context.SaveChangesAsync();
                 }
                 else
                 {
-                    kupovnoSredstvo.Iznos += responseObject.conversion_rate;
+                    kupovnoSredstvo.Iznos += responseObject.conversion_result;
                     _context.Sredstva.Update(kupovnoSredstvo);
                     await _context.SaveChangesAsync();
 
@@ -215,15 +253,9 @@ namespace ExchangeValuta.Services
 
 
                 zahtjev.Prihvacen = 2;
+                zahtjev.DatumVrijemeKreiranja = DateTime.Now;
                 var zah = _mapper.Map<Zahtjev>(zahtjev);
 
-                // TODO
-                // NAPRAVITI OVO, sada sve odradi osim promjene statusa zahtjeva iz 1 u 2
-                // kad pokušam updateati status zahtjeva s 1 na 2 i dolje spremiti promjene, pukne
-                //_context.Zahtjevi.Update(zah);
-
-
-                // pukne ovdje kod spremanja, zasto?
                 await _context.SaveChangesAsync();
             }
 
