@@ -251,10 +251,13 @@ namespace ExchangeValuta.Services
 
                 }
 
+                var zah = await _context.Zahtjevi
+                    .Where(v => v.ZahtjevId == odobravanjeZahtjeva.ZahtjevId)
+                    .FirstOrDefaultAsync();
 
-                zahtjev.Prihvacen = 2;
-                zahtjev.DatumVrijemeKreiranja = DateTime.Now;
-                var zah = _mapper.Map<Zahtjev>(zahtjev);
+                zah.Prihvacen = 2;
+                zah.DatumVrijemeKreiranja = DateTime.Now;
+                _context.Zahtjevi.Update(zah);
 
                 await _context.SaveChangesAsync();
             }

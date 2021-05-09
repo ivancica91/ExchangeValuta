@@ -17,6 +17,10 @@ namespace ExchangeValuta.Helpers
 
             CreateMap<Korisnik, UpdateLoggedUserDto>().ReverseMap();
             CreateMap<Korisnik, UpdateUserDto>().ReverseMap();
+            CreateMap<Korisnik, UpdateUserByNameDto>().ReverseMap();
+            CreateMap<KorisnikDto, UpdateUserByNameDto>().ReverseMap();
+
+
 
 
             CreateMap<Valuta, ValutaDto>();

@@ -33,10 +33,10 @@ namespace ExchangeValuta.Controllers
             _service = service;
         }
 
-        [HttpGet("DrzavaByValutaId")]
-        public async Task<DrzavaDetaljiDto> GetDrzavaByValutaId(int valutaId)
+        [HttpGet("DrzavaByValutaId/{id}")]
+        public async Task<DrzavaDetaljiDto> GetDrzavaByValutaId(int id)
         {
-            return await _service.GetDrzavaByValutaId(valutaId);
+            return await _service.GetDrzavaByValutaId(id);
         }
 
         [HttpGet("PopisDrzava")]
@@ -52,14 +52,14 @@ namespace ExchangeValuta.Controllers
         }
 
 
-        [HttpGet("DrzavaByValuta")]
-        public async Task<MapDrzavaDto> GetMapDrzavaByValutaId(int valutaId)
+        [HttpGet("DrzavaByValuta/{id}")]
+        public async Task<MapDrzavaDto> GetMapDrzavaByValutaId([FromRoute]int id)
         {
             // kul, radi, samo prebaci u servis sve!
             //var drzava = await _context.Drzave.FindAsync(drzavaId);
             var drzava = await _context.Drzave
                 .Include(v => v.Valuta)
-                .Where(x => x.ValutaId == valutaId)
+                .Where(x => x.ValutaId == id)
                 .FirstOrDefaultAsync();
                 
 

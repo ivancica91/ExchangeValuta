@@ -315,14 +315,14 @@ namespace ExchangeValuta.Services
                 if (ids == null)
                 {
                     _context.Add(valuta);
-                    _context.SaveChanges();
+                    //_context.SaveChanges();
+                }
+                //else
+                //{
 
-                }
-                else if (ids != null)
-                {
-                    Update(valuta);
-                    _context.SaveChanges();
-                }
+                //   // Update(valuta);
+                //    //_context.SaveChanges();
+                //}
                 //_context.Update(valuta);
                 _context.SaveChanges();
 

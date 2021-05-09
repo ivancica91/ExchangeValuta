@@ -140,6 +140,46 @@ namespace ExchangeValuta.Services
             .ToListAsync();
         }
 
+        public async Task<KorisnikDto> GetUserByName(string userName)
+        {
+            return await _context.Users
+                .Where(x => x.UserName == userName)
+                .Include(r => r.UserRoles)
+                .ThenInclude(r => r.Role)
+                .ProjectTo<KorisnikDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<KorisnikDto> GetUserById(int id)
+        {
+            return await _context.Users
+                .Where(x => x.Id == id)
+                .Include(r => r.UserRoles)
+                .ThenInclude(r => r.Role)
+                .ProjectTo<KorisnikDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+        }
+
+
+
+        //public async Task<KorisnikDto> UpdateUserByName(UpdateUserByNameDto updateUser, string userName)
+        //{
+        //    var user = _context.Users
+        //        .Where(x => x.UserName == userName)
+        //        .Include(r => r.UserRoles)
+        //        .ThenInclude(r => r.Role)
+        //        .FirstOrDefaultAsync();
+
+        //    var mapped = await _mapper.Map(updateUser, user);
+
+        //   var update = _context.Update(mapped);
+        //    await _context.SaveChangesAsync();
+
+        //    return  _mapper.Map<KorisnikDto>(mapped);
+
+        //}
+
+
         public async Task<KorisnikDto> PostUser(PostUserDto postUser)
         {
             var user = new Korisnik()
@@ -165,10 +205,10 @@ namespace ExchangeValuta.Services
         }
 
 
-        public async Task UpdateUser(UpdateUserDto updateUser)
+        public async Task UpdateUser(UpdateUserDto updateUser, int id)
         {
             var user = await _userManager.Users
-                .Where(k => k.Id == updateUser.Id)
+                .Where(k => k.Id == id)
                 .FirstOrDefaultAsync();
 
             _mapper.Map(updateUser, user);
