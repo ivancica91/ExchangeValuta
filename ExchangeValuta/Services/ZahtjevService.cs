@@ -143,19 +143,34 @@ namespace ExchangeValuta.Services
         }
 
 
-        // NE IZBACUJE MI DOBRE REZULTATE, POGLEDATI JOS MALO TO FILTRIRANJE
-        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime from, DateTime to)
+        //public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime from, DateTime to)
+        //{
+        //   return await _context.Zahtjevi
+        //        .Include(v => v.Valuta)
+        //        .Where(s => s.Prihvacen == 2 && s.DatumVrijemeKreiranja >= from && s.DatumVrijemeKreiranja <= to)
+        //        .GroupBy(s => s.ProdajemValutaId)
+        //        .Select(s => new UkupnoProdaneValuteDto()
+        //        {
+        //            ValutaId = s.Key,
+        //            Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo super ili cu srusit internet?
+        //            Iznos = s.Sum(v => v.Iznos),
+        //        }).ToListAsync();
+        //}
+
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateRangeDto dateRange)
         {
-           return await _context.Zahtjevi
-                .Where(s => s.Prihvacen == 2 && s.DatumVrijemeKreiranja >= from && s.DatumVrijemeKreiranja <= to)
-                .GroupBy(s => s.ProdajemValutaId)
-                .Select(s => new UkupnoProdaneValuteDto()
-                {
-                    ValutaId = s.Key,
-                    Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo super ili cu srusit internet?
+            return await _context.Zahtjevi
+                 .Include(v => v.Valuta)
+                 .Where(s => s.Prihvacen == 2 && s.DatumVrijemeKreiranja >= dateRange.From && s.DatumVrijemeKreiranja <= dateRange.To)
+                 .GroupBy(s => s.ProdajemValutaId)
+                 .Select(s => new UkupnoProdaneValuteDto()
+                 {
+                     ValutaId = s.Key,
+                     Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo super ili cu srusit internet?
                     Iznos = s.Sum(v => v.Iznos),
-                }).ToListAsync();
+                 }).ToListAsync();
         }
+
 
         //public async Task<IEnumerable<ZahtjevDto>> GetProdanoKupljenoOdbijeno(int korisnikId)
         //{
@@ -216,7 +231,6 @@ namespace ExchangeValuta.Services
                 throw new Exception("Zahtjev se ne može odobriti jer se navedena valuta ne može prodati u ovo doba dana.");
             }
 
-            //// TESTIRAJ
             if (odobravanjeZahtjeva.Prihvacen == 2)
             {
                 var prodajnoSredstvo = await _context.Sredstva

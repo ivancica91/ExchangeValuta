@@ -30,9 +30,9 @@ namespace ExchangeValuta.Controllers
 
         [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("AllOdobreneZahtjeve")]
-        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime from, DateTime to)
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve([FromQuery]DateRangeDto dateRange)
         {
-            return await _service.GetAllOdobreneZahtjeve(from, to);
+            return await _service.GetAllOdobreneZahtjeve(dateRange);
         }
 
 

@@ -8,8 +8,7 @@ namespace ExchangeValuta.Resources
     public class UkupnoProdaneValuteDto
     {
         public int ValutaId { get; set; }
-        public DateTime DatumVrijemeKreiranja { get; set; }
-        public string Naziv { get; set; }  //htio bi da i naziv pokaz, ali ne znam kako mapirati to?
+        public string Naziv { get; set; } 
         public double Iznos { get; set; }
 
 

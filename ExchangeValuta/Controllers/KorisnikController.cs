@@ -34,7 +34,6 @@ namespace ExchangeValuta.Controllers
             return await _service.GetAllUsers();
         }
 
-        [Authorize(Policy = "RequireAdminRole")]
         [HttpPut("UpdateUserById/{id}")]
         public async Task PutUser(UpdateUserDto updateUser, [FromRoute] int id)
         {
@@ -49,7 +48,6 @@ namespace ExchangeValuta.Controllers
             return await _service.GetUserByName(userName);
         }
 
-        [Authorize(Policy = "RequireAdminRole")]
         [HttpGet("{id}")]
         public async Task<KorisnikDto> GetUserById([FromRoute] int id)
         {
