@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace ExchangeValuta.Resources
 {
-    public class PostValutaDto
+    public class EditValutaDto
     {
-        //public int KorisnikId { get; set; }
         public string UserName { get; set; }
+
         public string Naziv { get; set; }
         public string SlikaValute { get; set; }
         public TimeSpan AktivnoOd { get; set; }

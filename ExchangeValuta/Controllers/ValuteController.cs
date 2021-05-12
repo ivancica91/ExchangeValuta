@@ -50,7 +50,7 @@ namespace ExchangeValuta.Controllers
 
         [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
         [HttpPost("DodajValutu")]
-        public async Task<ValutaDto> AddValuta(PostValutaDto postValutaDto)
+        public async Task<EditValutaDto> AddValuta(PostValutaDto postValutaDto)
         {
             return await _service.AddValuta(postValutaDto);
         }
@@ -64,7 +64,7 @@ namespace ExchangeValuta.Controllers
 
         [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
         [HttpPut("AzurirajValutu/{id}")]
-        public async Task<ValutaDto> PutValutaById(int id,PutValutaDto putValuta)
+        public async Task<EditValutaDto> PutValutaById(int id,PutValutaDto putValuta)
         {
             return await _service.PutValutaById(id,putValuta);
         }

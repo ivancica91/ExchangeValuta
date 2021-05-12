@@ -24,7 +24,11 @@ namespace ExchangeValuta.Helpers
 
 
             CreateMap<Valuta, ValutaDto>();
-            CreateMap<Valuta, ValutaDetailsDto>();
+            CreateMap<Valuta, ValutaDetailsDto>().ForMember(dest => dest.UserName,
+                opt => opt.MapFrom(src => src.Korisnik.UserName)).ReverseMap();
+            CreateMap<Valuta, EditValutaDto>().ForMember(dest => dest.UserName,
+                opt => opt.MapFrom(src => src.Korisnik.UserName)).ReverseMap(); ;
+
 
 
             CreateMap<Sredstva, SredstvaDto>().ForMember(dest => dest.Valuta,

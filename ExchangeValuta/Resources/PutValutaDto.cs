@@ -7,7 +7,9 @@ namespace ExchangeValuta.Resources
 {
     public class PutValutaDto
     {
-        public int KorisnikId { get; set; }
+        //public int KorisnikId { get; set; }
+        public string UserName { get; set; }
+
         public string Naziv { get; set; }
         public string SlikaValute { get; set; }
         public TimeSpan AktivnoOd { get; set; }

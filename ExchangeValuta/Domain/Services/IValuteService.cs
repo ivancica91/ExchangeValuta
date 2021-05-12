@@ -11,9 +11,9 @@ namespace ExchangeValuta.Domain.Services
     {
         Task<List<ValutaDto>> GetValute();
         Task<ValutaDetailsDto> GetValuta(int id);
-        Task<ValutaDto> AddValuta(PostValutaDto postValutaDto);
+        Task<EditValutaDto> AddValuta(PostValutaDto postValutaDto);
         Task<ValutaDto> PutTecajValute([FromRoute] int id /*PutTecajValuteDto putValuta*/);
-        Task<ValutaDto> PutValutaById(int id,PutValutaDto putValuta);
+        Task<EditValutaDto> PutValutaById(int id,PutValutaDto putValuta);
         void GetValuteToXml();
         void GetValuteFromXml();
     }

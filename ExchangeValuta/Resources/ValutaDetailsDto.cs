@@ -8,6 +8,7 @@ namespace ExchangeValuta.Resources
     public class ValutaDetailsDto
     {
         public int KorisnikId { get; set; }
+        public string UserName   { get; set; }
         public int ValutaId { get; set; }
         public string Naziv { get; set; }
         public double Tecaj { get; set; }

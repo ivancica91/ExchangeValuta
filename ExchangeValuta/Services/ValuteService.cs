@@ -53,13 +53,16 @@ namespace ExchangeValuta.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<ValutaDto> AddValuta(PostValutaDto postValutaDto)
+        public async Task<EditValutaDto> AddValuta(PostValutaDto postValutaDto)
         {
             var httpClient = _httpClientFactory.CreateClient("valute");
             var url = $"09a14a921f6de3a3c311a083/pair/HRK/{postValutaDto.Naziv}";
             var response = await httpClient.GetAsync(url);
             var responseStream = await response.Content.ReadAsStreamAsync();
             var responseObject = await JsonSerializer.DeserializeAsync<KonverzijaValute>(responseStream);
+
+
+            var korisnik = await _userManager.FindByNameAsync(postValutaDto.UserName);
 
             var valuta = new Valuta()
             {
@@ -68,10 +71,10 @@ namespace ExchangeValuta.Services
                 AktivnoDo = postValutaDto.AktivnoDo,
                 Tecaj = responseObject.conversion_rate,
                 SlikaValute = postValutaDto.SlikaValute,
-                KorisnikId = postValutaDto.KorisnikId
+                KorisnikId = korisnik.Id
             };
 
-            var korisnik =await _userManager.FindByIdAsync(postValutaDto.KorisnikId.ToString());
+            //var korisnik =await _userManager.FindByIdAsync(postValutaDto.KorisnikId.ToString());
             var role = _context.UserRoles
                 .Where(u => u.UserId == korisnik.Id)
                 .FirstOrDefault();
@@ -83,7 +86,7 @@ namespace ExchangeValuta.Services
 
             _context.Add(valuta);
             await _context.SaveChangesAsync();
-            return  _mapper.Map<ValutaDto>(valuta);
+            return  _mapper.Map<EditValutaDto>(valuta);
 
                 
 
@@ -136,7 +139,7 @@ namespace ExchangeValuta.Services
             return _mapper.Map<ValutaDto>(valuta);
         }
 
-        public async Task<ValutaDto> PutValutaById(int id, PutValutaDto putValuta)
+        public async Task<EditValutaDto> PutValutaById(int id, PutValutaDto putValuta)
         {
             var valuta = await _context.Valute
                 .Where(v => v.ValutaId == id)
@@ -147,10 +150,15 @@ namespace ExchangeValuta.Services
                 throw new Exception("Tražena valuta nije pronađena, molimo pokušajte ponovno.");
             }
 
-            var korisnik = await _userManager.FindByIdAsync(putValuta.KorisnikId.ToString());
+            // RADI PO ID-U, POKUŠAVAM DA UMJESTO TOGA UPIŠE KORISNICKO IME
+            //var korisnik = await _userManager.FindByIdAsync(putValuta.KorisnikId.ToString());
+            var korisnik = await _userManager.FindByNameAsync(putValuta.UserName);
+
+
             var role = _context.UserRoles
                 .Where(u => u.UserId == korisnik.Id)
                 .FirstOrDefault();
+
 
             // tu treba napraviti da samo admin može, a ne i moderator
             if (role.RoleId == 3)
@@ -167,7 +175,7 @@ namespace ExchangeValuta.Services
 
             valuta.Naziv = putValuta.Naziv;
             valuta.Tecaj = responseObject.conversion_rate;
-            valuta.KorisnikId = putValuta.KorisnikId;
+            valuta.KorisnikId = korisnik.Id;
             valuta.AktivnoOd = putValuta.AktivnoOd;
             valuta.AktivnoDo = putValuta.AktivnoDo;
             valuta.DatumAzuriranja = DateTime.Now.Date;
@@ -176,7 +184,7 @@ namespace ExchangeValuta.Services
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<ValutaDto>(valuta);
+            return _mapper.Map<EditValutaDto>(valuta);
         }
 
 

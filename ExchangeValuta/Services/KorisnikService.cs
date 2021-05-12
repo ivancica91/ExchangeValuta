@@ -259,5 +259,6 @@ namespace ExchangeValuta.Services
         {
             var entry = _context.Entry(korisnik).State = EntityState.Modified;
         }
+
     }
 }
