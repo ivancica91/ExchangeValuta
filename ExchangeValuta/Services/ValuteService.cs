@@ -201,115 +201,8 @@ namespace ExchangeValuta.Services
             }
         }
 
-        // kako da doda nove ako nema?
         public void GetValuteFromXml()
         {
-
-            //// NIJE DOBRO
-            //XmlSerializer deserializer = new XmlSerializer(typeof(List<Valuta>));
-
-            //TextReader reader = new StreamReader(@"C:/Users/Antonio/Desktop/valute.xml");
-            //object obj = deserializer.Deserialize(reader);
-
-            //List<Valuta> vanjskeValute = new List<Valuta>();
-            //var valute = (List <Valuta>) obj;
-
-            //foreach (var item in vanjskeValute)
-            //{
-            //    // U slučajnu da ne postoji
-            //    if (!valute.Any(s => s.ValutaId == item.ValutaId))
-            //    {
-            //        valute.Add(null);
-            //        _context.SaveChangesAsync();
-            //    }
-            //}
-
-
-            //foreach (var valuta in valute)
-            //{
-            //    _context.Update(valuta);
-            //    //_context.SaveChanges();
-
-            //}
-
-
-            //reader.Close();
-
-
-            // ovo prema milanovom tutorialu
-            //List<Valuta> vanjskeValute = new List<Valuta>();
-            //XmlReader reader =  XmlReader.Create(@"C:/Users/Antonio/Desktop/valute.xml");
-            //Valuta item = new Valuta();
-            //reader.MoveToContent();
-            //while (reader.Read())
-            //{
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "ValutaId")
-            //    {
-            //        item.ValutaId = Int32.Parse(reader.ReadElementContentAsString());
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "KorisnikId")
-            //    {
-            //        item.KorisnikId = Int32.Parse(reader.ReadElementContentAsString());
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "Naziv")
-            //    {
-            //        item.Naziv = reader.ReadElementContentAsString();
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "Tecaj")
-            //    {
-            //        item.Tecaj = Double.Parse(reader.ReadElementContentAsString());
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "SlikaValute")
-            //    {
-            //        item.SlikaValute = reader.ReadElementContentAsString();
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "AktivnoOd")
-            //    {
-            //        item.AktivnoOd = TimeSpan.Parse(reader.ReadElementContentAsString());
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "AktivnoDo")
-            //    {
-            //        item.AktivnoDo = TimeSpan.Parse(reader.ReadElementContentAsString());
-            //    }
-
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Name == "DatumAzuriranja")
-            //    {
-            //        item.DatumAzuriranja = DateTime.Parse(reader.ReadElementContentAsString());
-            //    }
-
-            //    if(!string.IsNullOrEmpty(item.ValutaId.ToString()) && !string.IsNullOrEmpty(item.KorisnikId.ToString()) &&
-            //        !string.IsNullOrEmpty(item.Naziv) && !string.IsNullOrEmpty(item.Tecaj.ToString()) && 
-            //        !string.IsNullOrEmpty(item.SlikaValute) && !string.IsNullOrEmpty(item.AktivnoOd.ToString()) && !string.IsNullOrEmpty(item.AktivnoDo.ToString()) && !string.IsNullOrEmpty(item.DatumAzuriranja.ToString()))
-            //    {
-            //        vanjskeValute.Add(item);
-            //        item = new Valuta();
-            //        _context.SaveChanges();
-            //    }
-
-            //    //foreach(var val in vanjskeValute)
-            //    //{
-            //    //    _context.Update(val);
-            //    //    _context.SaveChanges();
-            //    //}
-            //    _context.SaveChanges();
-
-            //    reader.Close();
-
-
-
-
-
-            //const string FILENAME = @"C:/Users/Antonio/Desktop/valute.xml";
-            //XmlReader reader = XmlReader.Create(FILENAME);
-            //XmlSerializer serializer = new XmlSerializer(typeof(Valuta));
-            //Valuta valuta = (Valuta)serializer.Deserialize(reader);
-
 
             XmlSerializer deserializer = new XmlSerializer(typeof(List<Valuta>));
             TextReader reader = new StreamReader(@"C:/Users/Antonio/Desktop/valute.xml");
@@ -319,19 +212,24 @@ namespace ExchangeValuta.Services
             {
                 Valuta ids = _context.Valute.Find(valuta.ValutaId);
 
-                // hoce sada dodati novu valutu, ali pukne kod updatea jer kaze  another instance with the same key value for {'ValutaId'} is already being tracked.
                 if (ids == null)
                 {
+                    valuta.DatumAzuriranja = DateTime.Now;
                     _context.Add(valuta);
-                    //_context.SaveChanges();
                 }
-                //else
-                //{
+                else
+                {
+                    ids.ValutaId = valuta.ValutaId;
+                    ids.KorisnikId = valuta.KorisnikId;
+                    ids.Naziv = valuta.Naziv;
+                    ids.Tecaj = valuta.Tecaj;
+                    ids.SlikaValute = valuta.SlikaValute;
+                    ids.AktivnoOd = valuta.AktivnoOd;
+                    ids.AktivnoDo = valuta.AktivnoDo;
+                    ids.DatumAzuriranja = valuta.DatumAzuriranja;
 
-                //   // Update(valuta);
-                //    //_context.SaveChanges();
-                //}
-                //_context.Update(valuta);
+                    _context.Update(ids);
+                }
                 _context.SaveChanges();
 
             }

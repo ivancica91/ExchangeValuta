@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
@@ -16,6 +17,15 @@ using System.Threading.Tasks;
 
 namespace ExchangeValuta.Services
 {
+    public static class QueryableExtender
+    {
+        public static IQueryable<TEntity> WhereIf<TEntity>(
+            this IQueryable<TEntity> query,
+            bool condition,
+            Expression<Func<TEntity, bool>> predicate) where TEntity : class
+            => condition ? query.Where(predicate) : query;
+    }
+
     public class ZahtjevService : IZahtjevService
     {
         private readonly ExchangeDbContext _context;
@@ -37,10 +47,8 @@ namespace ExchangeValuta.Services
             var id = _context.Korisnici.Where(k => k.UserName == userName)
                 .FirstOrDefault().Id;
 
-            // pokušavam umjesto id-a raditi s nazivima
             var prodajemValutu = await _context.Sredstva
                 .Include(v => v.Valuta)
-                //.Where(k => k.KorisnikId == id && k.ValutaId == postZahtjev.ProdajemValutaId)
                 .Where(k => k.KorisnikId == id && k.Valuta.Naziv == postZahtjev.ProdajemValuta)
                 .FirstOrDefaultAsync();
             if(prodajemValutu == null)
@@ -57,7 +65,6 @@ namespace ExchangeValuta.Services
 
             var raspoloziviIznos = _context.Sredstva
                 .Include(v => v.Valuta)
-                //.Where(k => k.KorisnikId == id && k.ValutaId == postZahtjev.ProdajemValutaId)
                   .Where(k => k.KorisnikId == id && k.Valuta.Naziv == postZahtjev.ProdajemValuta)
 
                 .Select(k => new ZahtjevDto()
@@ -81,8 +88,6 @@ namespace ExchangeValuta.Services
             {
                 KorisnikId = id,
                 Iznos = postZahtjev.Iznos,
-                //ProdajemValutaId = postZahtjev.ProdajemValutaId,
-                //KupujemValutaId = postZahtjev.KupujemValutaId,
                 ProdajemValutaId = prodajemValutu.ValutaId,
                 KupujemValutaId = kupujemId,
                 DatumVrijemeKreiranja = DateTime.Now,
@@ -139,87 +144,50 @@ namespace ExchangeValuta.Services
                     DatumVrijemeKreiranja = z.DatumVrijemeKreiranja
                 })
                 .ToListAsync();
+        }
 
+        public async Task<IEnumerable<ZahtjevDto>> GetZahtjeveByUser()
+        {
+            return await _context.Zahtjevi
+                .Include(v => v.Valuta)
+                .OrderBy(k => k.KorisnikId)
+                .ThenBy(z => z.Prihvacen)
+                .ProjectTo<ZahtjevDto>(_mapper.ConfigurationProvider)
+                .Select(z => new ZahtjevDto()
+                {
+                    ZahtjevId = z.ZahtjevId,
+                    KorisnikId = z.KorisnikId,
+                    ProdajemValutaId = z.ProdajemValutaId,
+                    ProdajemValuta = _context.Valute.Where(v => v.ValutaId == z.ProdajemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    KupujemValutaId = z.KupujemValutaId,
+                    KupujemValuta = _context.Valute.Where(v => v.ValutaId == z.KupujemValutaId).Select(s => s.Naziv).FirstOrDefault(),
+                    Iznos = z.Iznos,
+                    Prihvacen = z.Prihvacen,
+                    DatumVrijemeKreiranja = z.DatumVrijemeKreiranja
+                })
+                .ToListAsync();
         }
 
 
-        //public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime from, DateTime to)
-        //{
-        //   return await _context.Zahtjevi
-        //        .Include(v => v.Valuta)
-        //        .Where(s => s.Prihvacen == 2 && s.DatumVrijemeKreiranja >= from && s.DatumVrijemeKreiranja <= to)
-        //        .GroupBy(s => s.ProdajemValutaId)
-        //        .Select(s => new UkupnoProdaneValuteDto()
-        //        {
-        //            ValutaId = s.Key,
-        //            Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo super ili cu srusit internet?
-        //            Iznos = s.Sum(v => v.Iznos),
-        //        }).ToListAsync();
-        //}
 
-        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateRangeDto dateRange)
+
+
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime? from, DateTime? to, int? id)
         {
             return await _context.Zahtjevi
                  .Include(v => v.Valuta)
-                 .Where(s => s.Prihvacen == 2 && s.DatumVrijemeKreiranja >= dateRange.From && s.DatumVrijemeKreiranja <= dateRange.To)
+                 .Where(s => s.Prihvacen == 2)
+                 .WhereIf(id != null, s => s.Valuta.KorisnikId == id)
+                 .WhereIf(from != null && to != null, s => s.DatumVrijemeKreiranja >= from && s.DatumVrijemeKreiranja <= to)
                  .GroupBy(s => s.ProdajemValutaId)
                  .Select(s => new UkupnoProdaneValuteDto()
                  {
                      ValutaId = s.Key,
-                     Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo super ili cu srusit internet?
+                     Naziv = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(), // jel ovo  ok?
                     Iznos = s.Sum(v => v.Iznos),
-                 }).ToListAsync();
+                 })
+                 .ToListAsync();
         }
-
-
-
-        // ja bi da to sve nekkao vrati u jednom, kako?
-        //public async Task<ProdanoKupljenoOdbijenoDto> GetProdanoKupljenoOdbijeno(int korisnikId)
-        //{
-        //    var odobrenizahtjeviProdajna = await _context.Zahtjevi
-        //        .Include(v => v.Valuta)
-        //        .Where(z => z.KorisnikId == korisnikId && z.Prihvacen == 2)
-        //        .GroupBy(v => v.ProdajemValutaId)
-        //        .Select(s => new ProdanoKupljenoOdbijenoDto()
-        //        {
-        //            korisnikId = korisnikId,
-        //            prodajnaValutaOdobreno = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(),
-        //            iznosProdajnaOdobrenoIznos = s.Sum(v => v.Iznos),
-        //        }).ToListAsync();
-
-        //                var odobrenizahtjeviKupovna = await _context.Zahtjevi
-        //        .Include(v => v.Valuta)
-        //        .Where(z => z.KorisnikId == korisnikId && z.Prihvacen == 2)
-        //        .GroupBy(v => v.KupujemValutaId)
-        //        .Select(s => new ProdanoKupljenoOdbijenoDto()
-        //        {
-        //            korisnikId = korisnikId,
-        //            kupovnaValutaOdobreno = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(),
-        //            iznosKupovnaOdobreno = s.Sum(v => v.Iznos),
-        //        }).ToListAsync();
-
-
-        //                var odbijenizahtjeviProdajna = await _context.Zahtjevi
-        //        .Include(v => v.Valuta)
-        //        .Where(z => z.KorisnikId == korisnikId && z.Prihvacen == 1)
-        //        .GroupBy(v => v.ProdajemValutaId)
-        //        .Select(s => new ProdanoKupljenoOdbijenoDto()
-        //        {
-        //            korisnikId = korisnikId,
-        //            prodajnaValutaOdbijeno = _context.Valute.Where(v => v.ValutaId == s.Key).Select(s => s.Naziv).FirstOrDefault(),
-        //            iznosProdajnaOdbijenoIznos = s.Sum(v => v.Iznos),
-        //        }).ToListAsync();
-
-        //    var sve = new ProdanoKupljenoOdbijenoDto()
-        //    {
-        //        korisnikId = korisnikId,
-        //        prodajnaValutaOdobreno = odobrenizahtjeviProdajna.Where(x => x.prodajnaValutaOdobreno.FirstOrDefault())
-        //    }
-
-
-        //}
-
-
 
         public async Task<ZahtjevDto> OdobriZahtjev(OdobravanjeZahtjevaDto odobravanjeZahtjeva)
         {

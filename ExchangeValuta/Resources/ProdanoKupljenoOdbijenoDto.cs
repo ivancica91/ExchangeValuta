@@ -7,13 +7,13 @@ namespace ExchangeValuta.Resources
 {
     public class ProdanoKupljenoOdbijenoDto
     {
-        public int korisnikId { get; set; }
-        public string userName { get; set; }
-        public string prodajnaValutaOdobreno { get; set; }
-        public double iznosProdajnaOdobrenoIznos { get; set; }
-        public string kupovnaValutaOdobreno { get; set; }
-        public double iznosKupovnaOdobreno { get; set; }
-        public string prodajnaValutaOdbijeno { get; set; }
-        public double iznosProdajnaOdbijenoIznos { get; set; }
+        public int KorisnikId { get; set; }
+        public string UserName { get; set; }
+        public string ProdajnaValutaOdobreno { get; set; }
+        public double IznosProdajnaOdobrenoIznos { get; set; }
+        public string KupovnaValutaOdobreno { get; set; }
+        public double IznosKupovnaOdobreno { get; set; }
+        public string ProdajnaValutaOdbijeno { get; set; }
+        public double IznosProdajnaOdbijenoIznos { get; set; }
     }
 }
