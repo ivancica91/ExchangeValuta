@@ -97,7 +97,5 @@ namespace ExchangeValuta.Controllers
             await _korisnikService.UpdateLoggedUser(updateUser);
         }
 
-        // TODO
-        // UNLOCK USERA
     }
 }

@@ -168,16 +168,13 @@ namespace ExchangeValuta.Services
                 .ToListAsync();
         }
 
-
-
-
-
-        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime? from, DateTime? to, int? id)
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime? from, DateTime? to/*, int? id*/)
         {
-            return await _context.Zahtjevi
+            var zahtjevi = await _context.Zahtjevi
                  .Include(v => v.Valuta)
                  .Where(s => s.Prihvacen == 2)
-                 .WhereIf(id != null, s => s.Valuta.KorisnikId == id)
+                 // nije mi dobro ovo za moderatora; korisnik da id moderatora koji je odobrio zahtjev( u valuti gledamo korisnikId), ali ne pronalazi to
+                 //.WhereIf(id != null, s => s.Valuta.KorisnikId == id)
                  .WhereIf(from != null && to != null, s => s.DatumVrijemeKreiranja >= from && s.DatumVrijemeKreiranja <= to)
                  .GroupBy(s => s.ProdajemValutaId)
                  .Select(s => new UkupnoProdaneValuteDto()
@@ -187,6 +184,8 @@ namespace ExchangeValuta.Services
                     Iznos = s.Sum(v => v.Iznos),
                  })
                  .ToListAsync();
+
+            return zahtjevi;
         }
 
         public async Task<ZahtjevDto> OdobriZahtjev(OdobravanjeZahtjevaDto odobravanjeZahtjeva)
@@ -268,8 +267,6 @@ namespace ExchangeValuta.Services
                     kupovnoSredstvo.Iznos += responseObject.conversion_result;
                     _context.Sredstva.Update(kupovnoSredstvo);
                     await _context.SaveChangesAsync();
-
-
                 }
 
                 var zah = await _context.Zahtjevi

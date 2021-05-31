@@ -64,7 +64,6 @@ namespace ExchangeValuta.Services
                 var responseObject = await JsonSerializer.DeserializeAsync<KonverzijaValute>(responseStream);
 
 
-                // sve super, samo kako da mi pokazuje brojke u tisucama, sad mi npr 5000 pokazuje kao 5.000
                 protuvrijednosti.Add(new ProtuvrijednostDto()
                 {
                     Iznos = sredstvo.Iznos,
@@ -83,12 +82,10 @@ namespace ExchangeValuta.Services
             var id = _context.Korisnici.Where(k => k.UserName == userName)
                 .FirstOrDefault().Id;
 
-            // dodao da vidim jel radi s nazivom
             var valuta = await _context.Valute
                 .Where(v => v.Naziv == postSredstva.Valuta)
                 .FirstOrDefaultAsync();
 
-            // dodao da vidim jel radi s nazivom
             if (valuta == null)
             {
                 throw new Exception("Ne postoji tražena valuta, pokušajte ponovno. ");
@@ -101,7 +98,6 @@ namespace ExchangeValuta.Services
                 .Where(s => s.KorisnikId == id)
                 .ToListAsync();
 
-            // promijenio s id na ime da vidim jel radi, inace v => v.ValutaId == postSredstva.ValutaId
             var duplaSredstva = sredstvaaa.Where(v => v.Valuta.Naziv == postSredstva.Valuta).FirstOrDefault();
             if (duplaSredstva != null)
             {
@@ -116,7 +112,6 @@ namespace ExchangeValuta.Services
             var sredstva = new Sredstva
             {
                 KorisnikId = id,
-                //ValutaId = postSredstva.ValutaId,
                 ValutaId = valutaId,
                 Iznos = postSredstva.Iznos
             };
@@ -145,7 +140,6 @@ namespace ExchangeValuta.Services
                 .ToListAsync();
 
 
-            // promijenio iz .Where(v => v.ValutaId == postSredstva.ValutaId) u naziv da vidim jel radi
             var sredstvoToPut = sredstvaKorisnika
                 .Where(v => v.Valuta.Naziv == postSredstva.Valuta)
                 .FirstOrDefault();
@@ -164,10 +158,8 @@ namespace ExchangeValuta.Services
                 throw new Exception("Unesena valuta je izbrisana s popisa valuta koje posjedujete");
             }
 
-            // nije bas najelegantnije rješenje, ali radi. nisam uspio grupno nego ovako pojedinacno, mozda vidi kasnije jos
             sredstvoToPut.SredstvaId = sredstvoToPut.SredstvaId;
             sredstvoToPut.KorisnikId = id;
-            //sredstvoToPut.ValutaId = postSredstva.ValutaId;
             sredstvoToPut.ValutaId = valutaId;
             sredstvoToPut.Iznos = postSredstva.Iznos;
 
@@ -177,11 +169,6 @@ namespace ExchangeValuta.Services
             return _mapper.Map<SredstvaDto>(sredstvoToPut);
 
         }
-
-
-
-
-
 
     }
 }

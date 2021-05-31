@@ -19,23 +19,13 @@ namespace ExchangeValuta.Controllers
     public class ValuteController : ControllerBase
     {
         private readonly IValuteService _service;
-        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ValuteController(IValuteService service, IHttpClientFactory httpClientFactory)
+        public ValuteController(IValuteService service)
         {
             _service = service;
-            _httpClientFactory = httpClientFactory;
         }
 
-        // S ovime dobijemo sve tečajeve u odnosu na kunu
-        // bzvz, treba vidjeti u funkc. sto je ostalo
-        //[HttpGet("konverziju")]
-        //public async Task<Tecaj> GetProtuvrijednostOdHRK()
-        //{
-        //    return await _conversionService.GetAllAsync();
-        //}
-
-        [HttpGet("PopisValuta")]  // to namne treba, samo za test bilo
+        [HttpGet("PopisValuta")]  
         public async Task<List<ValutaDto>> GetValute()
         {
             var valute = await _service.GetValute();
@@ -48,7 +38,7 @@ namespace ExchangeValuta.Controllers
             return await _service.GetValuta(id);
         }
 
-        [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
+        [Authorize(Policy = "RequireAdminRole")]  
         [HttpPost("DodajValutu")]
         public async Task<EditValutaDto> AddValuta(PostValutaDto postValutaDto)
         {
@@ -57,12 +47,12 @@ namespace ExchangeValuta.Controllers
 
         [Authorize(Policy = "RequireModeratorRole")]
         [HttpPut("AzurirajTecaj/{id}")]
-        public async Task<ValutaDto> PutTecajValute([FromRoute] int id/*PutTecajValuteDto putValuta*/)
+        public async Task<ValutaDto> PutTecajValute([FromRoute] int id)
         {
             return await _service.PutTecajValute(id);
         }
 
-        [Authorize(Policy = "RequireAdminRole")]   // testiraj ovo!
+        [Authorize(Policy = "RequireAdminRole")]   
         [HttpPut("AzurirajValutu/{id}")]
         public async Task<EditValutaDto> PutValutaById(int id,PutValutaDto putValuta)
         {
@@ -82,8 +72,6 @@ namespace ExchangeValuta.Controllers
         }
 
 
-        // TODO
-        // VALUTEFROMXML
 
 
 

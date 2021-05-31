@@ -74,7 +74,6 @@ namespace ExchangeValuta.Services
                 KorisnikId = korisnik.Id
             };
 
-            //var korisnik =await _userManager.FindByIdAsync(postValutaDto.KorisnikId.ToString());
             var role = _context.UserRoles
                 .Where(u => u.UserId == korisnik.Id)
                 .FirstOrDefault();
@@ -92,7 +91,7 @@ namespace ExchangeValuta.Services
 
         }
 
-        public async Task<ValutaDto> PutTecajValute([FromRoute] int id /*PutTecajValuteDto putValuta*/)
+        public async Task<ValutaDto> PutTecajValute([FromRoute] int id)
         {
             var userName = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userId = _context.Korisnici.Where(k => k.UserName == userName)
@@ -103,7 +102,6 @@ namespace ExchangeValuta.Services
                 .ToListAsync();
 
             var valuta = valute
-                //.Where(v => v.ValutaId == putValuta.ValutaId)
                 .Where(v => v.ValutaId == id)
                 .FirstOrDefault();
                 
@@ -127,8 +125,6 @@ namespace ExchangeValuta.Services
             var responseObject = await JsonSerializer.DeserializeAsync<KonverzijaValute>(responseStream);
 
 
-            //valuta.ValutaId = putValuta.ValutaId;
-            //valuta.Naziv = valuta.Naziv;
             valuta.Tecaj = responseObject.conversion_rate;
             valuta.DatumAzuriranja = DateTime.Now;
         
@@ -150,8 +146,6 @@ namespace ExchangeValuta.Services
                 throw new Exception("Tražena valuta nije pronađena, molimo pokušajte ponovno.");
             }
 
-            // RADI PO ID-U, POKUŠAVAM DA UMJESTO TOGA UPIŠE KORISNICKO IME
-            //var korisnik = await _userManager.FindByIdAsync(putValuta.KorisnikId.ToString());
             var korisnik = await _userManager.FindByNameAsync(putValuta.UserName);
 
 
@@ -186,9 +180,6 @@ namespace ExchangeValuta.Services
 
             return _mapper.Map<EditValutaDto>(valuta);
         }
-
-
-
 
         public void GetValuteToXml()
         {
@@ -234,14 +225,12 @@ namespace ExchangeValuta.Services
 
             }
             reader.Close();
-
-
         }
 
 
         public void Update(Valuta valuta)
         {
-            var entry = _context.Entry(valuta).State = EntityState.Modified;
+            _context.Entry(valuta).State = EntityState.Modified;
         }
 
 

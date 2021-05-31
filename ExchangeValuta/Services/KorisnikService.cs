@@ -132,7 +132,6 @@ namespace ExchangeValuta.Services
             };
         }
 
-
         public async Task<IEnumerable<GetUsersDto>> GetAllUsers()
         {
             return await _context.Korisnici
@@ -159,26 +158,6 @@ namespace ExchangeValuta.Services
                 .ProjectTo<KorisnikDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }
-
-
-
-        //public async Task<KorisnikDto> UpdateUserByName(UpdateUserByNameDto updateUser, string userName)
-        //{
-        //    var user = _context.Users
-        //        .Where(x => x.UserName == userName)
-        //        .Include(r => r.UserRoles)
-        //        .ThenInclude(r => r.Role)
-        //        .FirstOrDefaultAsync();
-
-        //    var mapped = await _mapper.Map(updateUser, user);
-
-        //   var update = _context.Update(mapped);
-        //    await _context.SaveChangesAsync();
-
-        //    return  _mapper.Map<KorisnikDto>(mapped);
-
-        //}
-
 
         public async Task<KorisnikDto> PostUser(PostUserDto postUser)
         {
@@ -253,7 +232,6 @@ namespace ExchangeValuta.Services
              await _userManager.GetRolesAsync(user);
 
         }
-
 
         public void Update(Korisnik korisnik)
         {

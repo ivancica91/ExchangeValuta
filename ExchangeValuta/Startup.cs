@@ -45,7 +45,6 @@ namespace ExchangeValuta
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
-            //services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMailService, MailService>();
 
             services.AddHttpClient("valute", c =>

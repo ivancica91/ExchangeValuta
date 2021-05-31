@@ -29,7 +29,6 @@ namespace ExchangeValuta.Services
                .Where(x => x.ValutaId == valutaId)
                .ProjectTo<DrzavaDetaljiDto>(_mapper.ConfigurationProvider)
                .FirstOrDefaultAsync();
-
         }
 
 

@@ -30,13 +30,10 @@ namespace ExchangeValuta.Controllers
 
 
         [HttpGet("AllOdobreneZahtjeve")]
-        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve([FromQuery] DateTime? from = null, DateTime? to = null, int? id = null)
+        public async Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve([FromQuery] DateTime? from, DateTime? to/*, int? id*/)
         {
-            return await _service.GetAllOdobreneZahtjeve(from, to, id);
+            return await _service.GetAllOdobreneZahtjeve(from, to/*, id*/);
         }
-
-
-
 
         [Authorize(Policy = "RequireSignedUpUser")]
         [HttpPost("Zahtjev")]

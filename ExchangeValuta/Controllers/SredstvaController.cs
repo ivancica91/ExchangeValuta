@@ -20,12 +20,10 @@ namespace ExchangeValuta.Controllers
     public class SredstvaController : ControllerBase
     {
         private readonly ISredstvaService _service;
-        private readonly ExchangeDbContext _context;
 
-        public SredstvaController(ISredstvaService service, ExchangeDbContext context)
+        public SredstvaController(ISredstvaService service)
         {
             _service = service;
-            _context = context;
         }
 
         [Authorize(Policy = "RequireSignedUpUser")]

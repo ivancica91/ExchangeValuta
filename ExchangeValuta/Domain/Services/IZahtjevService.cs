@@ -15,9 +15,6 @@ namespace ExchangeValuta.Domain.Services
         Task<IEnumerable<ZahtjevDto>> GetZahtjeveByLoggedUser();
         Task<IEnumerable<ZahtjevDto>> GetZahtjeveByUser();
         Task<ZahtjevDto> OdobriZahtjev(OdobravanjeZahtjevaDto odobravanjeZahtjeva);
-        Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime? from, DateTime? to, int? id);
-
-        //Task<IEnumerable<ZahtjevDto>> GetProdanoKupljenoOdbijeno(int korisnikId);
-
+        Task<IEnumerable<UkupnoProdaneValuteDto>> GetAllOdobreneZahtjeve(DateTime? from, DateTime? to/*, int? id*/);
     }
 }

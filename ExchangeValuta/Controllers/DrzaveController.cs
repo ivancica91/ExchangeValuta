@@ -21,15 +21,10 @@ namespace ExchangeValuta.Controllers
     [ApiController]
     public class DrzaveController : ControllerBase
     {
-        private readonly ExchangeDbContext _context;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IDrzaveService _service;
-        private readonly IMapper _mapper;
 
-        public DrzaveController(ExchangeDbContext context, IHttpClientFactory httpClientFactory, IDrzaveService service)
+        public DrzaveController(IDrzaveService service)
         {
-            _context = context;
-            _httpClientFactory = httpClientFactory;
             _service = service;
         }
 
@@ -51,43 +46,5 @@ namespace ExchangeValuta.Controllers
             return await _service.GetHimnaDrzave(id);
         }
 
-
-        [HttpGet("DrzavaByValuta/{id}")]
-        public async Task<MapDrzavaDto> GetMapDrzavaByValutaId([FromRoute]int id)
-        {
-            // kul, radi, samo prebaci u servis sve!
-            //var drzava = await _context.Drzave.FindAsync(drzavaId);
-            var drzava = await _context.Drzave
-                .Include(v => v.Valuta)
-                .Where(x => x.ValutaId == id)
-                .FirstOrDefaultAsync();
-                
-
-
-            var httpClient = _httpClientFactory.CreateClient();
-            var url = $"https://nominatim.openstreetmap.org/reverse?lat={drzava.Sirina}&lon={drzava.Duljina}&zoom=3&format=json";
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(".NET Framework Test Client");
-            var response = await httpClient.GetAsync(url);
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var responseObject = await JsonSerializer.DeserializeAsync<OpenStreetMap>(responseStream);
-
-
-
-
-
-            //var request = (HttpWebRequest)WebRequest.Create(url);
-            //request.UserAgent = ".NET Framework Test Client";
-            //var response = (HttpWebResponse)request.GetResponse();
-            //var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-            var prikaz = new MapDrzavaDto()
-            {
-                Naziv = responseObject.display_name
-            };
-
-            return prikaz;
-
-
-        }
     }
 }

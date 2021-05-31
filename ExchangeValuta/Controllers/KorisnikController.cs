@@ -54,9 +54,6 @@ namespace ExchangeValuta.Controllers
             return await _service.GetUserById(id);
         }
 
-
-
-
         [Authorize(Policy = "RequireAdminRole")]
         [HttpPost("AddUser")]
         public async Task<KorisnikDto> AddUser(PostUserDto postUser)
@@ -78,7 +75,7 @@ namespace ExchangeValuta.Controllers
                 .Select(u => new
                 {
                     u.Id,
-                    UserName = u.UserName,
+                    u.UserName,
                     Roles = u.UserRoles.Select(r => r.Role.Name).ToList()
                 })
                 .ToListAsync();
@@ -92,8 +89,6 @@ namespace ExchangeValuta.Controllers
         {
             await _service.EditRoles(userName, role);
         }
-
-
 
     }
 }
